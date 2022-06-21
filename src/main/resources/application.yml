@@ -1,0 +1,20 @@
+spring:
+    data:
+        rest:
+            base-path: "/api"
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        password: meuhas12emili
+        url: jdbc:mysql://localhost:3306/reddit?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true
+        username: root
+        data-locations: classpath:/data.sql
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                format_sql: true
+server:
+    port: 8080
+
