@@ -15,6 +15,9 @@ public class UserPrincipal implements UserDetails {
     private String username;
     private String password;
     private boolean enabled;
+    private boolean locked;
+    private boolean accountExpired;
+    private boolean credentialsExpired;
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
@@ -34,17 +37,17 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return !accountExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !locked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return !credentialsExpired;
     }
 
     @Override

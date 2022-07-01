@@ -1,5 +1,5 @@
 package com.beval.server.model.enums;
 
 public enum RoleEnum {
-    ADMIN, USER, MODERATOR
+    ROLE_ADMIN, ROLE_USER, ROLE_MODERATOR
 }

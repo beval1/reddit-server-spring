@@ -2,6 +2,7 @@ package com.beval.server.security;
 
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    public CustomUserDetailsService(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -31,10 +34,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
                 .collect(Collectors.toSet());
 
+        UserPrincipal userPrincipal = modelMapper.map(user, UserPrincipal.class);
+        userPrincipal.setAuthorities(authorities);
 
-        return new UserPrincipal.UserPrincipalBuilder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .authorities(authorities).build();
+        return userPrincipal;
     }
 }

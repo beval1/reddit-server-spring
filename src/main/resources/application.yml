@@ -1,6 +1,6 @@
 app:
-    jwt-expiration-milliseconds: 60
-    jwt-secret: JWTSecretKey
+    jwtExpirationMs: 60000000
+    jwtSecret: 6jCTFSacGgVfffoK/c/DQg4z0848R9a71acEiKgjozs=
 server:
     port: 8081
 spring:

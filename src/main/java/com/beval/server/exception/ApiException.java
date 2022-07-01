@@ -2,10 +2,9 @@ package com.beval.server.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
-@ResponseStatus
+//General Api Exception
 public class ApiException extends RuntimeException{
     private final HttpStatus status;
 

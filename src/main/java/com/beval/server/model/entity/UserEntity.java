@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +29,7 @@ public class UserEntity extends BaseEntity {
 
 
     // when user is deleted, delete the corresponding roles in the mapping table
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RoleEntity> roles;
 
 }

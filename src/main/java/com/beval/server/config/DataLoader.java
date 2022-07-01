@@ -1,13 +1,8 @@
 package com.beval.server.config;
 
-import com.beval.server.model.entity.CommentEntity;
-import com.beval.server.model.entity.PostEntity;
-import com.beval.server.model.entity.Subreddit;
-import com.beval.server.model.entity.UserEntity;
-import com.beval.server.repository.PostCommentRepository;
-import com.beval.server.repository.PostRepository;
-import com.beval.server.repository.SubredditRepository;
-import com.beval.server.repository.UserRepository;
+import com.beval.server.model.entity.*;
+import com.beval.server.model.enums.RoleEnum;
+import com.beval.server.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -21,20 +16,32 @@ public class DataLoader implements ApplicationRunner {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRepository commentRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public DataLoader(SubredditRepository subredditRepository, UserRepository userRepository, PostRepository postRepository, PostCommentRepository commentRepository) {
+    public DataLoader(SubredditRepository subredditRepository, UserRepository userRepository,
+                      PostRepository postRepository, PostCommentRepository commentRepository,
+                      RoleRepository roleRepository) {
         this.subredditRepository = subredditRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.roleRepository = roleRepository;
     }
 
     public void run(ApplicationArguments args) {
-        UserEntity user = userRepository.save(new UserEntity());
+        //set user roles
+        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ROLE_ADMIN).build());
+        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ROLE_USER).build());
+        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ROLE_MODERATOR).build());
+
+        UserEntity user = userRepository.save(UserEntity.builder().username("test")
+                .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                .enabled(true)
+                .build());
         CommentEntity comment = commentRepository.save(CommentEntity.builder().author(user).content("lalalalal").build());
         PostEntity post = postRepository.save(new PostEntity("Kur", user, List.of(comment)));
-        Subreddit subreddit = subredditRepository.saveAndFlush(new Subreddit("Gluposti",
+        subredditRepository.saveAndFlush(new Subreddit("Gluposti",
                 List.of(post), List.of(user)));
 
     }

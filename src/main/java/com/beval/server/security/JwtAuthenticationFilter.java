@@ -2,6 +2,7 @@ package com.beval.server.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,25 +19,19 @@ import java.io.IOException;
 
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    @Autowired
     private JwtTokenProvider tokenProvider;
+    @Autowired
     private UserDetailsService userDetailsService;
-    private final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-
-    public JwtAuthenticationFilter() {
-    }
-
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UserDetailsService userDetailsService) {
-        this.tokenProvider = tokenProvider;
-        this.userDetailsService = userDetailsService;
-    }
+    private final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String username = tokenProvider.getUserUsernameFromJWT(jwt);
+            if (StringUtils.hasText(jwt) && tokenProvider.validateJwtToken(jwt)) {
+                String username = tokenProvider.getUsernameFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -44,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            LOGGER.error("Could not set user authentication in security context", ex);
+            logger.error("Could not set user authentication in security context", ex);
         }
         filterChain.doFilter(request, response);
     }

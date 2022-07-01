@@ -36,11 +36,7 @@ public class SecurityConfiguration {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers("**").permitAll()
-                //.antMatchers(UrlMapping.AUTH + UrlMapping.SIGN_UP).permitAll()
-                //.antMatchers(UrlMapping.AUTH + UrlMapping.LOGIN).permitAll()
-                //.antMatchers(UrlMapping.VALIDATE_JWT).permitAll()
-                //.antMatchers("/api/test/**").permitAll()
+                .antMatchers("/api/v1/auth/**").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
