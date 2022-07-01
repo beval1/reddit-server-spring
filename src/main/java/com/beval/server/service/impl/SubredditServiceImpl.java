@@ -1,8 +1,8 @@
-package com.beval.reddit_server_spring.service.impl;
+package com.beval.server.service.impl;
 
-import com.beval.reddit_server_spring.model.entity.Subreddit;
-import com.beval.reddit_server_spring.repository.SubredditRepository;
-import com.beval.reddit_server_spring.service.SubredditService;
+import com.beval.server.model.entity.Subreddit;
+import com.beval.server.repository.SubredditRepository;
+import com.beval.server.service.SubredditService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

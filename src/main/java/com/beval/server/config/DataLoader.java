@@ -1,19 +1,18 @@
-package com.beval.reddit_server_spring.config;
+package com.beval.server.config;
 
-import com.beval.reddit_server_spring.model.entity.Comment;
-import com.beval.reddit_server_spring.model.entity.Post;
-import com.beval.reddit_server_spring.model.entity.Subreddit;
-import com.beval.reddit_server_spring.model.entity.User;
-import com.beval.reddit_server_spring.repository.PostCommentRepository;
-import com.beval.reddit_server_spring.repository.PostRepository;
-import com.beval.reddit_server_spring.repository.SubredditRepository;
-import com.beval.reddit_server_spring.repository.UserRepository;
+import com.beval.server.model.entity.CommentEntity;
+import com.beval.server.model.entity.PostEntity;
+import com.beval.server.model.entity.Subreddit;
+import com.beval.server.model.entity.UserEntity;
+import com.beval.server.repository.PostCommentRepository;
+import com.beval.server.repository.PostRepository;
+import com.beval.server.repository.SubredditRepository;
+import com.beval.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -32,9 +31,9 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        User user = userRepository.save(new User());
-        Comment comment = commentRepository.save(Comment.builder().author(user).content("lalalalal").build());
-        Post post = postRepository.save(new Post("Kur", user, List.of(comment)));
+        UserEntity user = userRepository.save(new UserEntity());
+        CommentEntity comment = commentRepository.save(CommentEntity.builder().author(user).content("lalalalal").build());
+        PostEntity post = postRepository.save(new PostEntity("Kur", user, List.of(comment)));
         Subreddit subreddit = subredditRepository.saveAndFlush(new Subreddit("Gluposti",
                 List.of(post), List.of(user)));
 

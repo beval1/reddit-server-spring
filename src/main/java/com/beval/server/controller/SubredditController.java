@@ -1,9 +1,8 @@
-package com.beval.reddit_server_spring.controller;
+package com.beval.server.controller;
 
-import com.beval.reddit_server_spring.model.entity.Subreddit;
-import com.beval.reddit_server_spring.service.SubredditService;
+import com.beval.server.model.entity.Subreddit;
+import com.beval.server.service.SubredditService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
