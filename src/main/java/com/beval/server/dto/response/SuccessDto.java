@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Builder
 public class SuccessDto {
     private String message;
-    private HttpStatus status;
     private Object content;
     private LocalDateTime timestamp;
 }
