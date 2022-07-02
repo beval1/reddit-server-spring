@@ -1,6 +1,6 @@
 app:
     jwtExpirationMs: 60000000
-    jwtSecret: 6jCTFSacGgVfffoK/c/DQg4z0848R9a71acEiKgjozs=
+    jwtSecret: "6jCTFSacGgVfffoK/c/DQg4z0848R9a71acEiKgjozs="
 server:
     port: 8084
 spring:
