@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        RoleEntity role = roleRepository.findByRoleName(RoleEnum.ROLE_USER).orElseThrow(()
+        RoleEntity role = roleRepository.findByRoleName(RoleEnum.USER).orElseThrow(()
                 -> new RuntimeException("No Default User Role in the database"));
 
         //create new user

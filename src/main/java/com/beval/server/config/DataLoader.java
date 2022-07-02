@@ -31,9 +31,9 @@ public class DataLoader implements ApplicationRunner {
 
     public void run(ApplicationArguments args) {
         //set user roles
-        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ROLE_ADMIN).build());
-        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ROLE_USER).build());
-        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ROLE_MODERATOR).build());
+        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ADMIN).build());
+        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.USER).build());
+        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.MODERATOR).build());
 
         UserEntity user = userRepository.save(UserEntity.builder().username("test")
                 .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
