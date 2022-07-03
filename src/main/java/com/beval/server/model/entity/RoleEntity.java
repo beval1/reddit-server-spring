@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -13,6 +14,7 @@ import javax.persistence.Enumerated;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "roles")
 public class RoleEntity extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private RoleEnum roleName;

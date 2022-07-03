@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -11,6 +12,7 @@ import javax.persistence.OneToOne;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "comments")
 public class CommentEntity extends BaseEntity {
     private String content;
 

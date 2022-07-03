@@ -2,9 +2,7 @@ package com.beval.server.model.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "subreddits")
 public class Subreddit extends BaseEntity{
     private String title;
 
@@ -21,6 +20,9 @@ public class Subreddit extends BaseEntity{
     private List<PostEntity> posts = new ArrayList<>();
 
     @ManyToMany
+    @JoinTable(name = "subbreddit_admins",
+            joinColumns = @JoinColumn(name = "subbredit_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<UserEntity> admins;
 
 }

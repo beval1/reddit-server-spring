@@ -2,10 +2,7 @@ package com.beval.server.model.entity;
 
 import lombok.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name="users")
 public class UserEntity extends BaseEntity {
     private String username;
     private String password;
@@ -29,7 +27,9 @@ public class UserEntity extends BaseEntity {
 
 
     // when user is deleted, delete the corresponding roles in the mapping table
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name="user_roles", joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles;
 
 }
