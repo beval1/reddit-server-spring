@@ -20,7 +20,7 @@ public class Subreddit extends BaseEntity{
     private List<PostEntity> posts = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(name = "subbreddit_admins",
+    @JoinTable(name = "subbreddits_admins",
             joinColumns = @JoinColumn(name = "subbredit_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<UserEntity> admins;
