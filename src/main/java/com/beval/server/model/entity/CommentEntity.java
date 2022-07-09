@@ -1,10 +1,14 @@
 package com.beval.server.model.entity;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.lang.Nullable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -14,15 +18,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "comments")
 public class CommentEntity extends BaseEntity {
+    @NotNull
+    @Length(max = 255)
     private String content;
 
+
     @OneToOne
+    @NotNull
     private UserEntity author;
 
     @OneToOne
     private CommentEntity parentComment;
 
     @OneToOne
+    @NotNull
     private PostEntity post;
 
 }
