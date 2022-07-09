@@ -38,6 +38,7 @@ public class DataLoader implements ApplicationRunner {
         UserEntity user = userRepository.save(UserEntity.builder().username("test")
                 .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
                 .enabled(true)
+                .credentialsExpired(true)
                 .build());
         CommentEntity comment = commentRepository.save(CommentEntity.builder().author(user).content("lalalalal").build());
         PostEntity post = postRepository.save(new PostEntity("Kur", user, List.of(comment)));

@@ -3,6 +3,9 @@ app:
     jwtSecret: "6jCTFSacGgVfffoK/c/DQg4z0848R9a71acEiKgjozs="
 server:
     port: 8084
+#logging:
+#    level:
+#        root: debug
 spring:
     data:
         rest:

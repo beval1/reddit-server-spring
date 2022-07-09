@@ -1,7 +1,10 @@
 package com.beval.server.security;
 
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -32,12 +35,10 @@ public class JwtTokenProvider {
                 .compact();
     }
     public String getUsernameFromJwtToken(String token) {
-        //return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
         return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token).getBody().getSubject();
     }
     public boolean validateJwtToken(String authToken) {
         try {
-            //Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {

@@ -1,7 +1,7 @@
 package com.beval.server.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SuccessDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResponseDto {
     private String message;
     private Object content;
     private LocalDateTime timestamp;
