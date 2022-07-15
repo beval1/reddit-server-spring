@@ -1,16 +1,11 @@
 package com.beval.server.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.beval.server.config.AppConstants.MAXIMUM_TITLE_LENGTH;
@@ -20,6 +15,7 @@ import static com.beval.server.config.AppConstants.MINIMUM_TITLE_LENGTH;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "posts")
 public class PostEntity extends BaseEntity {

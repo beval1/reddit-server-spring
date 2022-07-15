@@ -2,9 +2,6 @@ package com.beval.server.model.entity;
 
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.lang.Nullable;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -30,8 +27,8 @@ public class CommentEntity extends BaseEntity {
     @OneToOne
     private CommentEntity parentComment;
 
-    @OneToOne
-    @NotNull
-    private PostEntity post;
+//    @OneToOne
+//    @NotNull
+//    private PostEntity post;
 
 }
