@@ -22,8 +22,8 @@ public class SubredditEntity extends BaseEntity{
     @Length(max = MAXIMUM_TITLE_LENGTH, min = MINIMUM_TITLE_LENGTH)
     private String title;
 
-    @OneToMany
-    private List<PostEntity> posts;
+//    @OneToMany
+//    private List<PostEntity> posts;
 
     @NotNull
     @ManyToMany

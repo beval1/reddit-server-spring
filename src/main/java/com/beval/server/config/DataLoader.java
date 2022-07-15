@@ -54,18 +54,23 @@ public class DataLoader implements ApplicationRunner {
                         .email("test@test.com")
                 .build());
 
+        SubredditEntity subreddit = subredditRepository.save(
+                SubredditEntity
+                        .builder()
+                        .admins(List.of(user))
+                        .title("Reddit title")
+                        .build());
+
         PostEntity post = postRepository.save(
             PostEntity
                     .builder()
                     .title("Testov post1111")
                     .author(user)
+                    .subreddit(subreddit)
                     .build()
         );
 
         commentService.addComment("lalalalal", post, user);
-
-        subredditRepository.save(new SubredditEntity("Gluposti subreddit",
-                List.of(post), List.of(user)));
 
     }
 }

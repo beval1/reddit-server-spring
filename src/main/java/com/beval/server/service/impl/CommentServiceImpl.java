@@ -8,7 +8,6 @@ import com.beval.server.service.CommentService;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -22,17 +21,13 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void addComment(String content, PostEntity post, UserEntity author) {
-        CommentEntity commentEntity = commentRepository.save(
+        commentRepository.save(
                 CommentEntity
                         .builder()
                         .author(author)
+                        .post(post)
                         .content(content)
                         .build());
 
-        if (post.getComments() == null) {
-            post.setComments(new ArrayList<>());
-        }
-
-        post.getComments().add(commentEntity);
     }
 }

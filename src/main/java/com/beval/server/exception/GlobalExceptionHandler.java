@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -27,18 +25,6 @@ public class GlobalExceptionHandler {
 //        );
 //    }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Object> handleUserAlreadyExistsException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ResponseDTO
-                        .builder()
-                        .message(ex.getMessage())
-                        .content(null)
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
     //default handler
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<Object> handleDefault(Exception ex) {
@@ -51,6 +37,29 @@ public class GlobalExceptionHandler {
 //                        .build()
 //        );
 //    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Object> handleUserAlreadyExistsException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ResponseDTO
+                        .builder()
+                        .message(ex.getMessage())
+                        .content(null)
+                        .build()
+        );
+    }
+    @ExceptionHandler({ResourceNotFoundException.class, RoleNotFoundException.class})
+    public ResponseEntity<Object> handleNotFound(Exception ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseDTO
+                        .builder()
+                        .message(ex.getMessage())
+                        .content(null)
+                        .build()
+        );
+    }
+
+
 
 
 }

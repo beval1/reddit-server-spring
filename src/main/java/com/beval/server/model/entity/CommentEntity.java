@@ -27,8 +27,8 @@ public class CommentEntity extends BaseEntity {
     @OneToOne
     private CommentEntity parentComment;
 
-//    @OneToOne
-//    @NotNull
-//    private PostEntity post;
+    @OneToOne
+    @NotNull
+    private PostEntity post;
 
 }

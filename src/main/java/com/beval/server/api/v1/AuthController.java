@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping(path = "/api/v1/auth")
 public class AuthController {
@@ -34,7 +32,6 @@ public class AuthController {
         ).body(
                 ResponseDTO
                         .builder()
-                        .timestamp(LocalDateTime.now())
                         .message("Logged in successfully!")
                         .content(JwtResponseDTO
                                 .builder()
@@ -52,7 +49,6 @@ public class AuthController {
                 .body(
                         ResponseDTO
                                 .builder()
-                                .timestamp(LocalDateTime.now())
                                 .message("Signed up successfully!")
                                 .content(null)
                                 .build()
