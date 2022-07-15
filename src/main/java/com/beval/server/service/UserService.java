@@ -1,9 +1,9 @@
 package com.beval.server.service;
 
-import com.beval.server.dto.payload.SigninDto;
-import com.beval.server.dto.payload.SignupDto;
+import com.beval.server.dto.payload.SigninDTO;
+import com.beval.server.dto.payload.SignupDTO;
 
 public interface UserService {
-    String signInUser(SigninDto signinDto);
-    void signUpUser(SignupDto signupDto);
+    String signInUser(SigninDTO signinDto);
+    void signUpUser(SignupDTO signupDto);
 }

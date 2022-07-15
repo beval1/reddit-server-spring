@@ -1,6 +1,6 @@
 package com.beval.server.api.v1;
 
-import com.beval.server.model.entity.Subreddit;
+import com.beval.server.dto.response.SubredditDTO;
 import com.beval.server.service.SubredditService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ public class SubredditController {
     }
 
     @GetMapping("/get-all")
-    public List<Subreddit> getAllSubreddits(){
+    public List<SubredditDTO> getAllSubreddits(){
         return subredditService.getAllSubreddits();
     }
 }

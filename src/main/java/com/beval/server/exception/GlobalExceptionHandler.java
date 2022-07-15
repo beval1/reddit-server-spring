@@ -1,6 +1,6 @@
 package com.beval.server.exception;
 
-import com.beval.server.dto.response.ResponseDto;
+import com.beval.server.dto.response.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Object> handleUserAlreadyExistsException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ResponseDto
+                ResponseDTO
                         .builder()
                         .message(ex.getMessage())
                         .content(null)

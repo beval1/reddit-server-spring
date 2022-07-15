@@ -2,6 +2,7 @@ package com.beval.server.model.entity;
 
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -18,7 +19,6 @@ public class CommentEntity extends BaseEntity {
     @NotNull
     @Length(max = 255)
     private String content;
-
 
     @OneToOne
     @NotNull

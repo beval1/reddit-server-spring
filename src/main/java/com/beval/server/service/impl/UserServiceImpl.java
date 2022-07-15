@@ -1,7 +1,7 @@
 package com.beval.server.service.impl;
 
-import com.beval.server.dto.payload.SigninDto;
-import com.beval.server.dto.payload.SignupDto;
+import com.beval.server.dto.payload.SigninDTO;
+import com.beval.server.dto.payload.SignupDTO;
 import com.beval.server.exception.UserAlreadyExistsException;
 import com.beval.server.model.entity.RoleEntity;
 import com.beval.server.model.entity.UserEntity;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String signInUser(SigninDto signinDto) {
+    public String signInUser(SigninDTO signinDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 signinDto.getUsernameOrEmail(), signinDto.getPassword()));
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void signUpUser(SignupDto signupDto) {
+    public void signUpUser(SignupDTO signupDto) {
         //check if username already exist
         if (userRepository.existsByUsername(signupDto.getUsername())) {
             throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with such username already exists!");

@@ -1,9 +1,9 @@
 package com.beval.server.api.v1;
 
-import com.beval.server.dto.payload.SigninDto;
-import com.beval.server.dto.payload.SignupDto;
-import com.beval.server.dto.response.JwtResponseDto;
-import com.beval.server.dto.response.ResponseDto;
+import com.beval.server.dto.payload.SigninDTO;
+import com.beval.server.dto.payload.SignupDTO;
+import com.beval.server.dto.response.JwtResponseDTO;
+import com.beval.server.dto.response.ResponseDTO;
 import com.beval.server.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +25,18 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<ResponseDto> signIn(@RequestBody SigninDto signinDto) {
+    public ResponseEntity<ResponseDTO> signIn(@RequestBody SigninDTO signinDto) {
 
         String token = userService.signInUser(signinDto);
 
         return ResponseEntity.status(
                 HttpStatus.OK
         ).body(
-                ResponseDto
+                ResponseDTO
                         .builder()
                         .timestamp(LocalDateTime.now())
                         .message("Logged in successfully!")
-                        .content(JwtResponseDto
+                        .content(JwtResponseDTO
                                 .builder()
                                 .accessToken(token)
                                 .tokenType("Bearer").build())
@@ -45,12 +45,12 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto> signUp(@RequestBody SignupDto signupDto) {
+    public ResponseEntity<ResponseDTO> signUp(@RequestBody SignupDTO signupDto) {
         userService.signUpUser(signupDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(
-                        ResponseDto
+                        ResponseDTO
                                 .builder()
                                 .timestamp(LocalDateTime.now())
                                 .message("Signed up successfully!")

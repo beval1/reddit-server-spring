@@ -1,6 +1,6 @@
 package com.beval.server.security;
 
-import com.beval.server.dto.response.ResponseDto;
+import com.beval.server.dto.response.ResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
@@ -24,7 +24,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(),
-                ResponseDto
+                ResponseDTO
                         .builder()
                         .message(authException.getMessage())
                         .build());

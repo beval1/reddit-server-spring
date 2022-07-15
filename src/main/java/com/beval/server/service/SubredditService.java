@@ -1,9 +1,9 @@
 package com.beval.server.service;
 
-import com.beval.server.model.entity.Subreddit;
+import com.beval.server.dto.response.SubredditDTO;
 
 import java.util.List;
 
 public interface SubredditService {
-    List<Subreddit> getAllSubreddits();
+    List<SubredditDTO> getAllSubreddits();
 }

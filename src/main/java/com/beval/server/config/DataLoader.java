@@ -1,6 +1,9 @@
 package com.beval.server.config;
 
-import com.beval.server.model.entity.*;
+import com.beval.server.model.entity.PostEntity;
+import com.beval.server.model.entity.RoleEntity;
+import com.beval.server.model.entity.SubredditEntity;
+import com.beval.server.model.entity.UserEntity;
 import com.beval.server.model.enums.RoleEnum;
 import com.beval.server.repository.*;
 import com.beval.server.service.CommentService;
@@ -9,7 +12,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -62,7 +64,7 @@ public class DataLoader implements ApplicationRunner {
 
         commentService.addComment("lalalalal", post, user);
 
-        subredditRepository.save(new Subreddit("Gluposti subreddit",
+        subredditRepository.save(new SubredditEntity("Gluposti subreddit",
                 List.of(post), List.of(user)));
 
     }
