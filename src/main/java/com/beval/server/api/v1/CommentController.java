@@ -1,11 +1,12 @@
 package com.beval.server.api.v1;
 
+import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.dto.response.ResponseDTO;
-import com.beval.server.dto.response.SubredditDTO;
-import com.beval.server.service.SubredditService;
+import com.beval.server.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,22 +16,23 @@ import static com.beval.server.config.AppConstants.API_BASE;
 
 @RestController
 @RequestMapping(value = API_BASE)
-public class SubredditController {
-    private final SubredditService subredditService;
+public class CommentController {
 
-    public SubredditController(SubredditService subredditService) {
-        this.subredditService = subredditService;
+    private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
     }
 
-    @GetMapping("/subreddits")
-    public ResponseEntity<ResponseDTO> getAllSubreddits() {
-        List<SubredditDTO> subredditDTOS = subredditService.getAllSubreddits();
+    @GetMapping(value = "/posts/{postId}/comments")
+    public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable String postId) {
+        List<CommentDTO> comments = commentService.getAllCommentsForPost(postId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
                         ResponseDTO
                                 .builder()
-                                .content(subredditDTOS)
+                                .content(comments)
                                 .build()
                 );
     }

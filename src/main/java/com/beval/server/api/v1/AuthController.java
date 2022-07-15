@@ -27,25 +27,26 @@ public class AuthController {
 
         String token = userService.signInUser(signinDto);
 
-        return ResponseEntity.status(
-                HttpStatus.OK
-        ).body(
-                ResponseDTO
-                        .builder()
-                        .message("Logged in successfully!")
-                        .content(JwtResponseDTO
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
                                 .builder()
-                                .accessToken(token)
-                                .tokenType("Bearer").build())
-                        .build()
-        );
+                                .message("Logged in successfully!")
+                                .content(JwtResponseDTO
+                                        .builder()
+                                        .accessToken(token)
+                                        .tokenType("Bearer").build())
+                                .build()
+                );
     }
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseDTO> signUp(@RequestBody SignupDTO signupDto) {
         userService.signUpUser(signupDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(
                         ResponseDTO
                                 .builder()

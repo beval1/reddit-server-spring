@@ -25,19 +25,21 @@ public class PostController {
 
     @GetMapping(value = "/subreddits/{subredditId}/posts")
     public ResponseEntity<ResponseDTO> getAllPostsForSubreddit(
-            @PathVariable(value = "subredditId") String subredditId){
+            @PathVariable(value = "subredditId") String subredditId) {
 
         List<PostDTO> posts = postService.getAllPostsForSubreddit(subredditId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDTO
-                        .builder()
-                        .content(posts)
-                        .message(String
-                                .format("Successfully retrieved all posts for subreddit with id: %s",
-                                subredditId))
-                        .build()
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .content(posts)
+                                .message(String
+                                        .format("Successfully retrieved all posts for subreddit with id: %s",
+                                                subredditId))
+                                .build()
 
-        );
+                );
     }
 }
