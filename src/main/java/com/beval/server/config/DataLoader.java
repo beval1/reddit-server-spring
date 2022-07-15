@@ -44,22 +44,26 @@ public class DataLoader implements ApplicationRunner {
         List<RoleEntity> userRolesList = List.of(userRole);
 
         UserEntity user = userRepository.save(
-                UserEntity.builder().username("test1")
-                .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
-                .enabled(true)
+                UserEntity
+                        .builder()
+                        .username("test1")
+                        .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                        .enabled(true)
                         .roles(userRolesList)
                         .birthdate(null)
                         .firstName("Test")
                         .lastName("Test")
                         .email("test@test.com")
-                .build());
+                        .build()
+        );
 
         SubredditEntity subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
                         .admins(List.of(user))
                         .title("Reddit title")
-                        .build());
+                        .build()
+        );
 
         PostEntity post = postRepository.save(
             PostEntity

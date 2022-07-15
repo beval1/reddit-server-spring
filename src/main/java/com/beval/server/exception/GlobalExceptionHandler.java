@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //TODO: add exception handlers
-
     //exceptions for user authentications are later caught by the authenticationEntryPoint if not here
 //    @ExceptionHandler({DisabledException.class, BadCredentialsException.class,
 //            LockedException.class, CredentialsExpiredException.class, AccountExpiredException.class})

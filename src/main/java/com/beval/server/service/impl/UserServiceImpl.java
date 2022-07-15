@@ -2,6 +2,7 @@ package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.SigninDTO;
 import com.beval.server.dto.payload.SignupDTO;
+import com.beval.server.exception.RoleNotFoundException;
 import com.beval.server.exception.UserAlreadyExistsException;
 import com.beval.server.model.entity.RoleEntity;
 import com.beval.server.model.entity.UserEntity;
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
 
         RoleEntity role = roleRepository.findByRoleName(RoleEnum.USER).orElseThrow(()
-                -> new RuntimeException("No Default User Role in the database"));
+                -> new RoleNotFoundException(HttpStatus.NOT_FOUND, "No Default User Role in the database"));
 
         //create new user
         UserEntity user = modelMapper.map(signupDto, UserEntity.class);
