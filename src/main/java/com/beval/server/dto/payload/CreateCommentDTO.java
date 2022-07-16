@@ -1,6 +1,5 @@
 package com.beval.server.dto.payload;
 
-import com.beval.server.dto.response.AuthorDTO;
 import lombok.Getter;
 import lombok.Setter;
 

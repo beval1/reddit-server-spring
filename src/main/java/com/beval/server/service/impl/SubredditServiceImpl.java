@@ -2,7 +2,6 @@ package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.CreateSubredditDTO;
 import com.beval.server.dto.response.SubredditDTO;
-import com.beval.server.exception.ApiException;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
@@ -11,10 +10,8 @@ import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.SubredditService;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.ResolutionException;
 import java.util.Arrays;
 import java.util.List;
 

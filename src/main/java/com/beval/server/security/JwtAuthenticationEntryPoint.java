@@ -27,6 +27,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 ResponseDTO
                         .builder()
                         .message(authException.getMessage())
+                        .timestamp(null)
                         .build());
     }
 }
