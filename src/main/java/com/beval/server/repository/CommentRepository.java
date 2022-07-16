@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     List<CommentEntity> findAllCommentsByPostAndParentComment(PostEntity post, CommentEntity commentEntity);
+    boolean existsByParentComment(CommentEntity commentEntity);
     int countAllByPostAndParentComment(PostEntity post, CommentEntity commentEntity);
 }

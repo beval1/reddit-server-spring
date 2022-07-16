@@ -36,33 +36,6 @@ public class CommentServiceImpl implements CommentService {
         this.modelMapper = modelMapper;
     }
 
-    @Transactional
-    @Override
-    public CommentEntity addComment(String content, PostEntity post, UserEntity author) {
-        return commentRepository.save(
-                CommentEntity
-                        .builder()
-                        .author(author)
-                        .post(post)
-                        .content(content)
-                        .build()
-        );
-    }
-
-    @Transactional
-    @Override
-    public CommentEntity addReply(String content, PostEntity post, UserEntity author, CommentEntity parent) {
-        return commentRepository.save(
-                CommentEntity
-                        .builder()
-                        .author(author)
-                        .post(post)
-                        .content(content)
-                        .parentComment(parent)
-                        .build()
-        );
-    }
-
     @Override
     public List<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId) {
         PostEntity post = postRepository.findById(Long.parseLong(postId))
@@ -129,6 +102,31 @@ public class CommentServiceImpl implements CommentService {
                         .post(postEntity)
                         .build()
         );
+    }
+
+    @Override
+    @Transactional
+    public void updateCommentOrReply(String commentId, CreateCommentDTO createCommentDTO) {
+        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(ResourceNotFoundException::new);
+
+        commentEntity.setContent(createCommentDTO.getContent());
+    }
+
+    @Override
+    @Transactional
+    public void deleteCommentOrReply(String commentId) {
+        Long commentIdLong = Long.parseLong(commentId);
+        CommentEntity commentEntity = commentRepository.findById(commentIdLong)
+                .orElseThrow(ResourceNotFoundException::new);
+
+        //first check if there are any replies to the comment
+        if (commentRepository.existsByParentComment(commentEntity)){
+            commentEntity.setContent("[deleted]");
+        } else {
+            commentRepository.deleteById(commentIdLong);
+        }
+
     }
 
 }

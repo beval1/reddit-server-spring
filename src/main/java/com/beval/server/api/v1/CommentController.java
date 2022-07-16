@@ -1,10 +1,8 @@
 package com.beval.server.api.v1;
 
 import com.beval.server.dto.payload.CreateCommentDTO;
-import com.beval.server.dto.payload.CreateSubredditDTO;
 import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.dto.response.ResponseDTO;
-import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CommentService;
 import org.springframework.http.HttpStatus;
@@ -83,6 +81,45 @@ public class CommentController {
                         ResponseDTO
                                 .builder()
                                 .message("Reply created successfully!")
+                                .build()
+                );
+    }
+
+    //check if user is either the owner of the comment or admin
+    //@PreAuthorize()
+    //TODO: check for user role
+    @PatchMapping(value = "/comments/comment/{commentId}")
+    public ResponseEntity<ResponseDTO> updateCommentOrReply(
+            @PathVariable String commentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody CreateCommentDTO createCommentDTO) {
+
+        commentService.updateCommentOrReply(commentId, createCommentDTO);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Updated successfully")
+                                .build()
+                );
+    }
+
+    //TODO: check for user role
+    @DeleteMapping(value = "/comments/comment/{commentId}")
+    public ResponseEntity<ResponseDTO> deleteCommentOrReply(
+            @PathVariable String commentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        commentService.deleteCommentOrReply(commentId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Deleted successfully")
                                 .build()
                 );
     }

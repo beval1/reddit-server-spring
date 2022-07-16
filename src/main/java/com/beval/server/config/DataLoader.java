@@ -2,11 +2,7 @@ package com.beval.server.config;
 
 import com.beval.server.model.entity.*;
 import com.beval.server.model.enums.RoleEnum;
-import com.beval.server.repository.PostRepository;
-import com.beval.server.repository.RoleRepository;
-import com.beval.server.repository.SubredditRepository;
-import com.beval.server.repository.UserRepository;
-import com.beval.server.service.CommentService;
+import com.beval.server.repository.*;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -19,17 +15,17 @@ public class DataLoader implements ApplicationRunner {
     private final SubredditRepository subredditRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final RoleRepository roleRepository;
-    private final CommentService commentService;
 
     public DataLoader(SubredditRepository subredditRepository, UserRepository userRepository,
-                      PostRepository postRepository,
-                      RoleRepository roleRepository, CommentService commentService) {
+                      PostRepository postRepository, CommentRepository commentRepository,
+                      RoleRepository roleRepository) {
         this.subredditRepository = subredditRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
         this.roleRepository = roleRepository;
-        this.commentService = commentService;
     }
 
     @Transactional
@@ -73,9 +69,35 @@ public class DataLoader implements ApplicationRunner {
                     .build()
         );
 
-        CommentEntity commentEntity = commentService.addComment("lalalalal", post, user);
-        CommentEntity reply1 = commentService.addReply("222222222", post, user, commentEntity);
-        commentService.addReply("333333333", post, user, reply1);
+
+        CommentEntity commentEntity = commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(post)
+                        .content("lalalalal")
+                        .author(user)
+                        .parentComment(null)
+                        .build()
+        );
+        CommentEntity reply1 = commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(post)
+                        .content("22222222222222")
+                        .author(user)
+                        .parentComment(commentEntity)
+                        .build()
+        );
+
+        commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(post)
+                        .content("3333333333333333333")
+                        .author(user)
+                        .parentComment(reply1)
+                        .build()
+        );
 
     }
 }

@@ -4,14 +4,15 @@ import com.beval.server.dto.payload.CreatePostDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
+import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
 import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
+import com.beval.server.repository.CommentRepository;
 import com.beval.server.repository.PostRepository;
 import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
-import com.beval.server.service.CommentService;
 import com.beval.server.service.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,18 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final SubredditRepository subredditRepository;
+    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final CommentService commentService;
 
     public PostServiceImpl(PostRepository postRepository, SubredditRepository subredditRepository,
-                           UserRepository userRepository, ModelMapper modelMapper, CommentService commentService) {
+                           CommentRepository commentRepository,
+                           UserRepository userRepository, ModelMapper modelMapper) {
         this.postRepository = postRepository;
         this.subredditRepository = subredditRepository;
+        this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.commentService = commentService;
     }
 
     @Override
@@ -65,6 +67,14 @@ public class PostServiceImpl implements PostService {
         );
 
         //create OP comment
-        commentService.addComment(createPostDTO.getOriginalComment().getContent(), postEntity, userEntity);
+        commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(postEntity)
+                        .content(createPostDTO.getOriginalComment().getContent())
+                        .author(userEntity)
+                        .parentComment(null)
+                        .build()
+        );
     }
 }

@@ -31,4 +31,11 @@ public class CommentEntity extends BaseEntity {
     @NotNull
     private PostEntity post;
 
+    @Builder.Default
+    private int upVotes = 0;
+    @Builder.Default
+    private int downVotes = 0;
+
+//    @Builder.Default
+//    private boolean deleted = false;
 }
