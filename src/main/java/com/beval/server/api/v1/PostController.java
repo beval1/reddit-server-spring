@@ -1,14 +1,14 @@
 package com.beval.server.api.v1;
 
+import com.beval.server.dto.payload.CreatePostDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.dto.response.ResponseDTO;
+import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +38,25 @@ public class PostController {
                                 .message(String
                                         .format("Successfully retrieved all posts for subreddit with id: %s",
                                                 subredditId))
+                                .build()
+
+                );
+    }
+
+    @PostMapping(value = "/posts/{subredditId}")
+    public ResponseEntity<ResponseDTO> createPost(
+            @RequestBody CreatePostDTO createPostDTO,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable(value = "subredditId") String subredditId) {
+
+         postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Successfully created post")
                                 .build()
 
                 );

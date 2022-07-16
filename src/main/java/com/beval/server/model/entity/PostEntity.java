@@ -28,9 +28,6 @@ public class PostEntity extends BaseEntity {
     @OneToOne
     private UserEntity author;
 
-//    @OneToMany
-//    private List<CommentEntity> comments;
-
     @NotNull
     @ManyToOne
     private SubredditEntity subreddit;

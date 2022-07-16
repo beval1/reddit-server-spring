@@ -1,12 +1,16 @@
 package com.beval.server.service.impl;
 
+import com.beval.server.dto.payload.CreateCommentDTO;
 import com.beval.server.dto.response.CommentDTO;
+import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.repository.CommentRepository;
 import com.beval.server.repository.PostRepository;
+import com.beval.server.repository.UserRepository;
+import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CommentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -20,12 +24,15 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository,
+                              UserRepository userRepository,
                               ModelMapper modelMapper) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -86,5 +93,42 @@ public class CommentServiceImpl implements CommentService {
         return commentDTOS;
     }
 
+    @Override
+    public void createComment(String postId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal) {
+        PostEntity postEntity = postRepository.findById(Long.parseLong(postId))
+                .orElseThrow(ResourceNotFoundException::new);
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .parentComment(null)
+                        .content(createCommentDTO.getContent())
+                        .author(userEntity)
+                        .post(postEntity)
+                        .build()
+        );
+    }
+
+    @Override
+    public void createReply(String commentId, String postId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal) {
+        PostEntity postEntity = postRepository.findById(Long.parseLong(postId))
+                .orElseThrow(ResourceNotFoundException::new);
+        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(ResourceNotFoundException::new);
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .parentComment(commentEntity)
+                        .content(createCommentDTO.getContent())
+                        .author(userEntity)
+                        .post(postEntity)
+                        .build()
+        );
+    }
 
 }
