@@ -1,13 +1,14 @@
 package com.beval.server.api.v1;
 
+import com.beval.server.dto.payload.CreateSubredditDTO;
 import com.beval.server.dto.response.ResponseDTO;
 import com.beval.server.dto.response.SubredditDTO;
+import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.SubredditService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,4 +35,19 @@ public class SubredditController {
                                 .build()
                 );
     }
+
+    @PostMapping("/subreddits")
+    public ResponseEntity<ResponseDTO> createSubreddit(@RequestBody CreateSubredditDTO createSubredditDTO, @AuthenticationPrincipal UserPrincipal principal) {
+        subredditService.createSubreddit(createSubredditDTO, principal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Subreddit created successfully")
+                                .build()
+                );
+    }
+
 }

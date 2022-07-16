@@ -36,28 +36,18 @@ public class GlobalExceptionHandler {
 //        );
 //    }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Object> handleUserAlreadyExistsException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ResponseDTO
-                        .builder()
-                        .message(ex.getMessage())
-                        .content(null)
-                        .build()
-        );
+    @ExceptionHandler({ResourceNotFoundException.class, RoleNotFoundException.class,
+            UserAlreadyExistsException.class, NotAuthorizedException.class})
+    public ResponseEntity<Object> handleNotFound(ApiException ex) {
+        return ResponseEntity.status(ex.getStatus())
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message(ex.getMessage())
+                                .content(null)
+                                .build()
+                );
     }
-    @ExceptionHandler({ResourceNotFoundException.class, RoleNotFoundException.class})
-    public ResponseEntity<Object> handleNotFound(Exception ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseDTO
-                        .builder()
-                        .message(ex.getMessage())
-                        .content(null)
-                        .build()
-        );
-    }
-
-
 
 
 }

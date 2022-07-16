@@ -60,6 +60,7 @@ public class DataLoader implements ApplicationRunner {
                         .builder()
                         .admins(List.of(user))
                         .title("Reddit title")
+                        .description("tralalalallalallalallalallalalalalalallalalallalalal")
                         .build()
         );
 

@@ -24,7 +24,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping(value = "/posts/{postId}/comments")
+    @GetMapping(value = "/comments/{postId}")
     public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable String postId) {
         List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, null);
         return ResponseEntity
@@ -37,7 +37,7 @@ public class CommentController {
                 );
     }
 
-    @GetMapping(value = "/posts/{postId}/comments/{commentId}")
+    @GetMapping(value = "/comments/{postId}/comment/{commentId}")
     public ResponseEntity<ResponseDTO> getAllRepliesForComment(@PathVariable String postId, @PathVariable String commentId) {
         List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, commentId);
         return ResponseEntity

@@ -10,4 +10,5 @@ import lombok.*;
 public class SubredditDTO {
     private Long id;
     private String title;
+    private String description;
 }

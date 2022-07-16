@@ -23,7 +23,7 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping(value = "/subreddits/{subredditId}/posts")
+    @GetMapping(value = "/posts/{subredditId}")
     public ResponseEntity<ResponseDTO> getAllPostsForSubreddit(
             @PathVariable(value = "subredditId") String subredditId) {
 

@@ -14,6 +14,8 @@ public final class AppConstants {
     public static final int MAXIMUM_TITLE_LENGTH = 80;
     public static final int MAXIMUM_USERNAME_LENGTH = 20;
     public static final int MINIMUM_USERNAME_LENGTH = 5;
+    public static final int MAXIMUM_SUBREDDIT_DESCRIPTION_LENGTH = 350;
+    public static final int MINIMUM_SUBREDDIT_DESCRIPTION_LENGTH = 20;
 
 
 }

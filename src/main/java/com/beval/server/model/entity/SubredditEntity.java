@@ -7,8 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static com.beval.server.config.AppConstants.MAXIMUM_TITLE_LENGTH;
-import static com.beval.server.config.AppConstants.MINIMUM_TITLE_LENGTH;
+import static com.beval.server.config.AppConstants.*;
 
 @Getter
 @Setter
@@ -22,8 +21,9 @@ public class SubredditEntity extends BaseEntity{
     @Length(max = MAXIMUM_TITLE_LENGTH, min = MINIMUM_TITLE_LENGTH)
     private String title;
 
-//    @OneToMany
-//    private List<PostEntity> posts;
+    @NotNull
+    @Length(max = MAXIMUM_SUBREDDIT_DESCRIPTION_LENGTH, min = MINIMUM_SUBREDDIT_DESCRIPTION_LENGTH)
+    private String description;
 
     @NotNull
     @ManyToMany
