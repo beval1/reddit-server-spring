@@ -26,7 +26,20 @@ public class CommentController {
 
     @GetMapping(value = "/posts/{postId}/comments")
     public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable String postId) {
-        List<CommentDTO> comments = commentService.getAllCommentsForPost(postId);
+        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, null);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .content(comments)
+                                .build()
+                );
+    }
+
+    @GetMapping(value = "/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<ResponseDTO> getAllRepliesForComment(@PathVariable String postId, @PathVariable String commentId) {
+        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, commentId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(

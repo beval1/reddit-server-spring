@@ -1,11 +1,11 @@
 package com.beval.server.config;
 
-import com.beval.server.model.entity.PostEntity;
-import com.beval.server.model.entity.RoleEntity;
-import com.beval.server.model.entity.SubredditEntity;
-import com.beval.server.model.entity.UserEntity;
+import com.beval.server.model.entity.*;
 import com.beval.server.model.enums.RoleEnum;
-import com.beval.server.repository.*;
+import com.beval.server.repository.PostRepository;
+import com.beval.server.repository.RoleRepository;
+import com.beval.server.repository.SubredditRepository;
+import com.beval.server.repository.UserRepository;
 import com.beval.server.service.CommentService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -19,17 +19,15 @@ public class DataLoader implements ApplicationRunner {
     private final SubredditRepository subredditRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final RoleRepository roleRepository;
     private final CommentService commentService;
 
     public DataLoader(SubredditRepository subredditRepository, UserRepository userRepository,
-                      PostRepository postRepository, CommentRepository commentRepository,
+                      PostRepository postRepository,
                       RoleRepository roleRepository, CommentService commentService) {
         this.subredditRepository = subredditRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
         this.roleRepository = roleRepository;
         this.commentService = commentService;
     }
@@ -74,7 +72,9 @@ public class DataLoader implements ApplicationRunner {
                     .build()
         );
 
-        commentService.addComment("lalalalal", post, user);
+        CommentEntity commentEntity = commentService.addComment("lalalalal", post, user);
+        CommentEntity reply1 = commentService.addReply("222222222", post, user, commentEntity);
+        commentService.addReply("333333333", post, user, reply1);
 
     }
 }

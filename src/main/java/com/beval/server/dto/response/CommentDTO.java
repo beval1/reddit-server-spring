@@ -2,6 +2,8 @@ package com.beval.server.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,6 +12,7 @@ import lombok.*;
 public class CommentDTO {
     private Long id;
     private String content;
-    private UserDTO author;
-    private CommentDTO parentComment;
+    private AuthorDTO author;
+    private List<CommentDTO> replies;
+    private int repliesCount;
 }

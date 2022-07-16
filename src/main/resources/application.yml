@@ -7,9 +7,6 @@ server:
 #    level:
 #        root: debug
 spring:
-    data:
-        rest:
-            base-path: /api
     datasource:
         driverClassName: com.mysql.cj.jdbc.Driver
         password: meuhas12emili
@@ -22,3 +19,5 @@ spring:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL8Dialect
                 format_sql: true
+                show_sql: true
+        open-in-view: false
