@@ -3,6 +3,7 @@ package com.beval.server.service.impl;
 import com.beval.server.dto.payload.CreateSubredditDTO;
 import com.beval.server.dto.response.SubredditDTO;
 import com.beval.server.exception.NotAuthorizedException;
+import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.repository.SubredditRepository;
@@ -12,6 +13,7 @@ import com.beval.server.service.SubredditService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,5 +47,19 @@ public class SubredditServiceImpl implements SubredditService {
                 .admins(List.of(userEntity))
                 .build();
         subredditRepository.save(subredditEntity);
+    }
+
+    @Override
+    @Transactional
+    public void updateSubreddit(Long subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal) {
+        SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
+                .orElseThrow(ResourceNotFoundException::new);
+
+        if (createSubredditDTO.getDescription() != null){
+            subredditEntity.setTitle(createSubredditDTO.getTitle());
+        }
+        if (createSubredditDTO.getTitle() != null){
+            subredditEntity.setDescription(createSubredditDTO.getDescription());
+        }
     }
 }

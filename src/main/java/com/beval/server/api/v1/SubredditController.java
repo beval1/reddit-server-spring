@@ -50,4 +50,23 @@ public class SubredditController {
                 );
     }
 
+    @PatchMapping("/subreddits/subreddit/{subredditId}")
+    public ResponseEntity<ResponseDTO> createSubreddit(
+            @PathVariable Long subredditId,
+            @RequestBody CreateSubredditDTO createSubredditDTO,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+
+        subredditService.updateSubreddit(subredditId, createSubredditDTO, principal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Subreddit created successfully")
+                                .build()
+                );
+    }
+
 }

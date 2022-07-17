@@ -9,4 +9,5 @@ import java.util.List;
 public interface SubredditService {
     List<SubredditDTO> getAllSubreddits();
     void createSubreddit(CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
+    void updateSubreddit(Long subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
 }
