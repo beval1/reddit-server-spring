@@ -129,4 +129,28 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
+    @Override
+    @Transactional
+    public void upvoteComment(String commentId, UserPrincipal userPrincipal) {
+        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(ResourceNotFoundException::new);
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        commentEntity.getReactions().add(userEntity);
+        commentEntity.setUpVotes(commentEntity.getUpVotes() + 1);
+    }
+
+    @Override
+    @Transactional
+    public void downVoteComment(String commentId, UserPrincipal userPrincipal) {
+        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(ResourceNotFoundException::new);
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        commentEntity.getReactions().add(userEntity);
+        commentEntity.setUpVotes(commentEntity.getDownVotes() + 1);
+    }
+
 }

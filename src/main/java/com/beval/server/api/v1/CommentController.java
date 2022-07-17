@@ -123,4 +123,38 @@ public class CommentController {
                                 .build()
                 );
     }
+
+    @PostMapping(value = "/comments/comment/{commentId}/upvote")
+    public ResponseEntity<ResponseDTO> upvoteComment(
+            @PathVariable String commentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+            ) {
+        commentService.upvoteComment(commentId, userPrincipal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Upvoted successfully!")
+                                .build()
+                );
+    }
+
+    @PostMapping(value = "/comments/comment/{commentId}/downvote")
+    public ResponseEntity<ResponseDTO> downVoteComment(
+            @PathVariable String commentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        commentService.downVoteComment(commentId, userPrincipal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Downvoted successfully!")
+                                .build()
+                );
+    }
 }

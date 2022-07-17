@@ -52,7 +52,7 @@ public class SubredditController {
 
     @PatchMapping("/subreddits/subreddit/{subredditId}")
     public ResponseEntity<ResponseDTO> createSubreddit(
-            @PathVariable Long subredditId,
+            @PathVariable String subredditId,
             @RequestBody CreateSubredditDTO createSubredditDTO,
             @AuthenticationPrincipal UserPrincipal principal
     ) {

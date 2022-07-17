@@ -51,8 +51,8 @@ public class SubredditServiceImpl implements SubredditService {
 
     @Override
     @Transactional
-    public void updateSubreddit(Long subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal) {
-        SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
+    public void updateSubreddit(String subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal) {
+        SubredditEntity subredditEntity = subredditRepository.findById(Long.parseLong(subredditId))
                 .orElseThrow(ResourceNotFoundException::new);
 
         if (createSubredditDTO.getDescription() != null){

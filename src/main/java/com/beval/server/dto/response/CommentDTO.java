@@ -15,4 +15,6 @@ public class CommentDTO {
     private AuthorDTO author;
     private List<CommentDTO> replies;
     private int repliesCount;
+    private int upVotes;
+    private int downVotes;
 }

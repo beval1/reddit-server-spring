@@ -15,4 +15,7 @@ public interface CommentService {
 
     void updateCommentOrReply(String commentId, CreateCommentDTO createCommentDTO);
     void deleteCommentOrReply(String commentId);
+
+    void upvoteComment(String commentId, UserPrincipal userPrincipal);
+    void downVoteComment(String commentId, UserPrincipal userPrincipal);
 }
