@@ -10,4 +10,5 @@ public interface PostService {
     List<PostDTO> getAllPostsForSubreddit(String subredditId);
 
     void createPostForSubreddit(CreatePostDTO createPostDTO, UserPrincipal principal, String subredditId);
+    void deletePost(String postId);
 }

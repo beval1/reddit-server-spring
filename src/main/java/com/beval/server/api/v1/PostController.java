@@ -61,4 +61,23 @@ public class PostController {
 
                 );
     }
+
+    @DeleteMapping(value = "/posts/post/{postId}")
+    public ResponseEntity<ResponseDTO> createPost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable(value = "postId") String postId
+    ) {
+
+        postService.deletePost(postId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Successfully deleted post")
+                                .build()
+
+                );
+    }
 }
