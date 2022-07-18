@@ -1,5 +1,6 @@
 package com.beval.server.model.entity;
 
+import com.beval.server.model.interfaces.Upvotable;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -18,7 +19,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "comments")
-public class CommentEntity extends BaseEntity {
+public class CommentEntity extends BaseEntity implements Upvotable {
     @NotNull
     @Length(max = 255)
     private String content;
@@ -36,10 +37,10 @@ public class CommentEntity extends BaseEntity {
 
     @ManyToMany
     @Builder.Default
-    private Set<UserEntity> upVotedUsers = new HashSet<>();
+    private Set<UserEntity> upvotedUsers = new HashSet<>();
 
     @ManyToMany
     @Builder.Default
-    private Set<UserEntity> downVotedUsers = new HashSet<>();
+    private Set<UserEntity> downvotedUsers = new HashSet<>();
 
 }

@@ -12,6 +12,7 @@ import com.beval.server.repository.PostRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CommentService;
+import com.beval.server.utils.VotingUtility;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -28,14 +28,16 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final VotingUtility votingUtility;
 
     public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository,
-                              UserRepository userRepository,
-                              ModelMapper modelMapper) {
+                              UserRepository userRepository, ModelMapper modelMapper,
+                              VotingUtility votingUtility) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.votingUtility = votingUtility;
     }
 
     //TODO: make this function recursive
@@ -64,9 +66,9 @@ public class CommentServiceImpl implements CommentService {
 
         for (int i = 0; i < commentDTOS.size(); i++) {
             //set upvoted and downvoted attributes of DTO
-            setCommentUpvotedAndDownvotedForUser(commentEntities.get(i), commentDTOS.get(i), userEntity);
+            votingUtility.setUpvotedAndDownvotedForUser(commentEntities.get(i), commentDTOS.get(i), userEntity);
             //set upvotes and downvotes for DTO
-            setCommentVotes(commentEntities.get(i), commentDTOS.get(i));
+            votingUtility.setVotes(commentEntities.get(i), commentDTOS.get(i));
 
             List<CommentEntity> repliesEntities = commentRepository
                     .findAllCommentsByPostAndParentComment(post, commentEntities.get(i));
@@ -78,9 +80,9 @@ public class CommentServiceImpl implements CommentService {
                         .countAllByPostAndParentComment(post, repliesEntities.get(k));
                 repliesDTOs.get(k).setRepliesCount(repliesCount);
                 //set upvoted and downvoted attributes of DTO
-                setCommentUpvotedAndDownvotedForUser(repliesEntities.get(k), repliesDTOs.get(k), userEntity);
+                votingUtility.setUpvotedAndDownvotedForUser(repliesEntities.get(k), repliesDTOs.get(k), userEntity);
                 //set upvotes and downvotes for DTO
-                setCommentVotes(repliesEntities.get(k), repliesDTOs.get(k));
+                votingUtility.setVotes(repliesEntities.get(k), repliesDTOs.get(k));
             }
 
             //append to parentComment DTO
@@ -88,26 +90,6 @@ public class CommentServiceImpl implements CommentService {
             commentDTOS.get(i).setRepliesCount(repliesDTOs.size());
         }
         return commentDTOS;
-    }
-
-    //sets downvoted and upvoted attributes of CommentDTO
-    private void setCommentUpvotedAndDownvotedForUser(CommentEntity commentEntity,
-                                               CommentDTO commentDTO,
-                                               UserEntity user) {
-        if(user == null){
-            return;
-        }
-
-        if (commentEntity.getUpVotedUsers().stream().anyMatch(u -> Objects.equals(u.getId(), user.getId()))) {
-            commentDTO.setUpVotedByUser(true);
-        }
-        if (commentEntity.getDownVotedUsers().stream().anyMatch(u -> Objects.equals(u.getId(), user.getId()))) {
-            commentDTO.setDownVotedByUser(true);
-        }
-    }
-    private void setCommentVotes(@NotNull CommentEntity commentEntity,
-                                 @NotNull CommentDTO commentDTO){
-        commentDTO.setVotes(commentEntity.getUpVotedUsers().size() - commentEntity.getDownVotedUsers().size());
     }
 
     @Override
@@ -176,50 +158,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void upvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
-        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
-                .orElseThrow(ResourceNotFoundException::new);
-        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
-                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
-
-        //remove downvote if downvoted previously
-        if(commentEntity.getDownVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
-            commentEntity.getDownVotedUsers().remove(userEntity);
-        }
-
-        commentEntity.getUpVotedUsers().add(userEntity);
+        votingUtility.vote(commentId, userPrincipal, "upvote", "comment");
     }
 
     @Override
     @Transactional
     public void downvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
-        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
-                .orElseThrow(ResourceNotFoundException::new);
-        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
-                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
-
-        //remove upvote if upvoted previously
-        if(commentEntity.getUpVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
-            commentEntity.getUpVotedUsers().remove(userEntity);
-        }
-
-        commentEntity.getDownVotedUsers().add(userEntity);
+        votingUtility.vote(commentId, userPrincipal, "downvote", "comment");
     }
 
     @Override
     @Transactional
     public void unvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
-        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
-                .orElseThrow(ResourceNotFoundException::new);
-        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
-                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
-
-        if(commentEntity.getDownVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
-            commentEntity.getDownVotedUsers().remove(userEntity);
-        }
-
-        if(commentEntity.getUpVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
-            commentEntity.getUpVotedUsers().remove(userEntity);
-        }
+        votingUtility.vote(commentId, userPrincipal, "unvote", "comment");
     }
+
 
 }

@@ -14,6 +14,8 @@ import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.PostService;
+import com.beval.server.utils.VotingUtility;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -29,28 +31,42 @@ public class PostServiceImpl implements PostService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final VotingUtility votingUtility;
 
     public PostServiceImpl(PostRepository postRepository, SubredditRepository subredditRepository,
-                           CommentRepository commentRepository,
-                           UserRepository userRepository, ModelMapper modelMapper) {
+                           CommentRepository commentRepository, UserRepository userRepository,
+                           ModelMapper modelMapper, VotingUtility votingUtility) {
         this.postRepository = postRepository;
         this.subredditRepository = subredditRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.votingUtility = votingUtility;
     }
 
     @Override
-    public List<PostDTO> getAllPostsForSubreddit(String subredditId) {
+    @Transactional
+    public List<PostDTO> getAllPostsForSubreddit(String subredditId, UserPrincipal userPrincipal) {
         SubredditEntity subredditEntity = subredditRepository.findById(Long.parseLong(subredditId))
                 .orElseThrow(ResourceNotFoundException::new);
+        //user isn't required to be logged in
+        UserEntity userEntity = null;
+        if (userPrincipal != null) {
+            userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                    userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+        }
 
         List<PostEntity> postEntities = postRepository.findAllBySubredditOrderByCreatedOn(subredditEntity);
-        return Arrays.asList(modelMapper.map(postEntities, PostDTO[].class));
+        List<PostDTO> postDTOS = Arrays.asList(modelMapper.map(postEntities, PostDTO[].class));
+        for (int i = 0; i < postDTOS.size(); i++) {
+            votingUtility.setUpvotedAndDownvotedForUser(postEntities.get(i), postDTOS.get(i), userEntity);
+            votingUtility.setVotes(postEntities.get(i), postDTOS.get(i));
+        }
+        return postDTOS;
     }
 
     @Override
-    public void createPostForSubreddit(CreatePostDTO createPostDTO, UserPrincipal userPrincipal, String subredditId) {
+    public void createPostForSubreddit(@NotNull CreatePostDTO createPostDTO, @NotNull UserPrincipal userPrincipal, String subredditId) {
         SubredditEntity subredditEntity = subredditRepository.findById(Long.parseLong(subredditId))
                 .orElseThrow(ResourceNotFoundException::new);
 
@@ -60,11 +76,11 @@ public class PostServiceImpl implements PostService {
         //create the post
         PostEntity postEntity = postRepository.save(
                 PostEntity
-                    .builder()
+                        .builder()
                         .title(createPostDTO.getTitle())
                         .subreddit(subredditEntity)
                         .author(userEntity)
-                    .build()
+                        .build()
         );
 
         //create OP comment
@@ -88,4 +104,23 @@ public class PostServiceImpl implements PostService {
         //delete the post itself
         postRepository.deleteById(Long.parseLong(postId));
     }
+
+    @Override
+    @Transactional
+    public void upvotePost(String postId, UserPrincipal userPrincipal) {
+        votingUtility.vote(postId, userPrincipal, "upvote", "post");
+    }
+
+    @Override
+    @Transactional
+    public void downvotePost(String postId, UserPrincipal userPrincipal) {
+        votingUtility.vote(postId, userPrincipal, "downvote", "post");
+    }
+
+    @Override
+    @Transactional
+    public void unvotePost(String postId, UserPrincipal userPrincipal) {
+        votingUtility.vote(postId, userPrincipal, "unvote", "post");
+    }
+
 }

@@ -25,9 +25,10 @@ public class PostController {
 
     @GetMapping(value = "/posts/{subredditId}")
     public ResponseEntity<ResponseDTO> getAllPostsForSubreddit(
-            @PathVariable(value = "subredditId") String subredditId) {
+            @PathVariable(value = "subredditId") String subredditId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        List<PostDTO> posts = postService.getAllPostsForSubreddit(subredditId);
+        List<PostDTO> posts = postService.getAllPostsForSubreddit(subredditId, userPrincipal);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -78,6 +79,57 @@ public class PostController {
                                 .message("Successfully deleted post")
                                 .build()
 
+                );
+    }
+
+    @PostMapping(value = "/posts/post/{postId}/upvote")
+    public ResponseEntity<ResponseDTO> upvoteComment(
+            @PathVariable String postId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        postService.upvotePost(postId, userPrincipal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Upvoted successfully!")
+                                .build()
+                );
+    }
+
+    @PostMapping(value = "/posts/post/{postId}/downvote")
+    public ResponseEntity<ResponseDTO> downVoteComment(
+            @PathVariable String postId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        postService.downvotePost(postId, userPrincipal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Downvoted successfully!")
+                                .build()
+                );
+    }
+
+    @PostMapping(value = "/posts/post/{postId}/unvote")
+    public ResponseEntity<ResponseDTO> unvoteComment(
+            @PathVariable String postId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        postService.unvotePost(postId, userPrincipal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Unvoted successfully!")
+                                .build()
                 );
     }
 }
