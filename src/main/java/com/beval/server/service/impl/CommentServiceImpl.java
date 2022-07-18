@@ -12,12 +12,14 @@ import com.beval.server.repository.PostRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CommentService;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -36,38 +38,81 @@ public class CommentServiceImpl implements CommentService {
         this.modelMapper = modelMapper;
     }
 
+    //TODO: make this function recursive
     @Override
-    public List<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId) {
+    @Transactional
+    public List<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId,
+                                                                  UserPrincipal userPrincipal) {
+
         PostEntity post = postRepository.findById(Long.parseLong(postId))
                 .orElseThrow(ResourceNotFoundException::new);
 
-        CommentEntity commentEntity = null;
+        CommentEntity parentComment = null;
+        //if it's not comment but reply
         if (commentId != null) {
-            commentEntity = commentRepository.findById(Long.parseLong(commentId))
+            parentComment = commentRepository.findById(Long.parseLong(commentId))
                     .orElseThrow(ResourceNotFoundException::new);
         }
+        UserEntity userEntity = null;
+        if (userPrincipal != null){
+            userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
+                    .orElseThrow(NotAuthorizedException::new);
+        }
         List<CommentEntity> commentEntities = commentRepository
-                .findAllCommentsByPostAndParentComment(post, commentEntity);
-
-
+                .findAllCommentsByPostAndParentComment(post, parentComment);
         List<CommentDTO> commentDTOS = Arrays.asList(modelMapper.map(commentEntities, CommentDTO[].class));
+
         for (int i = 0; i < commentDTOS.size(); i++) {
+            //set upvoted and downvoted attributes of DTO
+            setCommentUpvotedAndDownvotedForUser(commentEntities.get(i), commentDTOS.get(i), userEntity);
+            //set upvotes and downvotes for DTO
+            setCommentUpvotesAndDownvotes(commentEntities.get(i), commentDTOS.get(i));
+
             List<CommentEntity> repliesEntities = commentRepository
                     .findAllCommentsByPostAndParentComment(post, commentEntities.get(i));
             List<CommentDTO> repliesDTOs = Arrays.asList(modelMapper.map(repliesEntities, CommentDTO[].class));
-            commentDTOS.get(i).setReplies(repliesDTOs);
-            commentDTOS.get(i).setRepliesCount(repliesDTOs.size());
+
+            //set size of third level replies and replies voted status for the principal
             for (int k = 0; k < repliesDTOs.size(); k++) {
                 int repliesCount = commentRepository
                         .countAllByPostAndParentComment(post, repliesEntities.get(k));
                 repliesDTOs.get(k).setRepliesCount(repliesCount);
+                //set upvoted and downvoted attributes of DTO
+                setCommentUpvotedAndDownvotedForUser(repliesEntities.get(k), repliesDTOs.get(k), userEntity);
+                //set upvotes and downvotes for DTO
+                setCommentUpvotesAndDownvotes(repliesEntities.get(k), repliesDTOs.get(k));
             }
+
+            //append to parentComment DTO
+            commentDTOS.get(i).setReplies(repliesDTOs);
+            commentDTOS.get(i).setRepliesCount(repliesDTOs.size());
         }
         return commentDTOS;
     }
 
+    //sets downvoted and upvoted attributes of CommentDTO
+    private void setCommentUpvotedAndDownvotedForUser(CommentEntity commentEntity,
+                                               CommentDTO commentDTO,
+                                               UserEntity user) {
+        if(user == null){
+            return;
+        }
+
+        if (commentEntity.getUpVotedUsers().stream().anyMatch(u -> Objects.equals(u.getId(), user.getId()))) {
+            commentDTO.setUpVotedByUser(true);
+        }
+        if (commentEntity.getDownVotedUsers().stream().anyMatch(u -> Objects.equals(u.getId(), user.getId()))) {
+            commentDTO.setDownVotedByUser(true);
+        }
+    }
+    private void setCommentUpvotesAndDownvotes(@NotNull CommentEntity commentEntity,
+                                               @NotNull CommentDTO commentDTO){
+        commentDTO.setUpVotes(commentEntity.getUpVotedUsers().size());
+        commentDTO.setDownVotes(commentEntity.getDownVotedUsers().size());
+    }
+
     @Override
-    public void createComment(String postId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal) {
+    public void createComment(String postId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
         PostEntity postEntity = postRepository.findById(Long.parseLong(postId))
                 .orElseThrow(ResourceNotFoundException::new);
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
@@ -85,7 +130,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void createReply(String commentId, String postId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal) {
+    public void createReply(String commentId, String postId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
         PostEntity postEntity = postRepository.findById(Long.parseLong(postId))
                 .orElseThrow(ResourceNotFoundException::new);
         CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
@@ -106,7 +151,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void updateCommentOrReply(String commentId, CreateCommentDTO createCommentDTO) {
+    public void updateCommentOrReply(String commentId, @NotNull CreateCommentDTO createCommentDTO) {
         CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(ResourceNotFoundException::new);
 
@@ -121,7 +166,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(ResourceNotFoundException::new);
 
         //first check if there are any replies to the comment
-        if (commentRepository.existsByParentComment(commentEntity)){
+        if (commentRepository.existsByParentComment(commentEntity)) {
             commentEntity.setContent("[deleted]");
         } else {
             commentRepository.deleteById(commentIdLong);
@@ -131,26 +176,51 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void upvoteComment(String commentId, UserPrincipal userPrincipal) {
+    public void upvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
         CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(ResourceNotFoundException::new);
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
 
-        commentEntity.getReactions().add(userEntity);
-        commentEntity.setUpVotes(commentEntity.getUpVotes() + 1);
+        //remove downvote if downvoted previously
+        if(commentEntity.getDownVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
+            commentEntity.getDownVotedUsers().remove(userEntity);
+        }
+
+        commentEntity.getUpVotedUsers().add(userEntity);
     }
 
     @Override
     @Transactional
-    public void downVoteComment(String commentId, UserPrincipal userPrincipal) {
+    public void downvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
         CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(ResourceNotFoundException::new);
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
 
-        commentEntity.getReactions().add(userEntity);
-        commentEntity.setUpVotes(commentEntity.getDownVotes() + 1);
+        //remove upvote if upvoted previously
+        if(commentEntity.getUpVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
+            commentEntity.getUpVotedUsers().remove(userEntity);
+        }
+
+        commentEntity.getDownVotedUsers().add(userEntity);
+    }
+
+    @Override
+    @Transactional
+    public void unvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
+        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(ResourceNotFoundException::new);
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        if(commentEntity.getDownVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
+            commentEntity.getDownVotedUsers().remove(userEntity);
+        }
+
+        if(commentEntity.getUpVotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))){
+            commentEntity.getUpVotedUsers().remove(userEntity);
+        }
     }
 
 }

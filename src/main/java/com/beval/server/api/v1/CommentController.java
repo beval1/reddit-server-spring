@@ -25,8 +25,10 @@ public class CommentController {
     }
 
     @GetMapping(value = "/comments/{postId}")
-    public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable String postId) {
-        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, null);
+    public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable String postId,
+                                                             @AuthenticationPrincipal UserPrincipal principal) {
+        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(
+                postId, null, principal);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -38,8 +40,10 @@ public class CommentController {
     }
 
     @GetMapping(value = "/comments/{postId}/comment/{commentId}")
-    public ResponseEntity<ResponseDTO> getAllRepliesForComment(@PathVariable String postId, @PathVariable String commentId) {
-        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, commentId);
+    public ResponseEntity<ResponseDTO> getAllRepliesForComment(@PathVariable String postId,
+                                                               @PathVariable String commentId,
+                                                               @AuthenticationPrincipal UserPrincipal principal) {
+        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, commentId, principal);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -146,7 +150,7 @@ public class CommentController {
             @PathVariable String commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        commentService.downVoteComment(commentId, userPrincipal);
+        commentService.downvoteComment(commentId, userPrincipal);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -154,6 +158,23 @@ public class CommentController {
                         ResponseDTO
                                 .builder()
                                 .message("Downvoted successfully!")
+                                .build()
+                );
+    }
+
+    @PostMapping(value = "/comments/comment/{commentId}/unvote")
+    public ResponseEntity<ResponseDTO> unvoteComment(
+            @PathVariable String commentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        commentService.unvoteComment(commentId, userPrincipal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Unvoted successfully!")
                                 .build()
                 );
     }

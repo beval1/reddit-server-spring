@@ -1,5 +1,6 @@
 package com.beval.server.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentDTO {
     private Long id;
     private String content;
@@ -17,4 +19,6 @@ public class CommentDTO {
     private int repliesCount;
     private int upVotes;
     private int downVotes;
+    private boolean upVotedByUser;
+    private boolean downVotedByUser;
 }

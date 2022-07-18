@@ -31,6 +31,7 @@ public class UserEntity extends BaseEntity {
     @NotNull
     private String email;
     private LocalDate birthdate;
+    private String profileImageUrl;
     private boolean enabled;
     private boolean locked;
     private boolean accountExpired;
@@ -44,4 +45,13 @@ public class UserEntity extends BaseEntity {
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles;
 
+    @ManyToMany
+    @JoinTable(name="users_upvotes", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id"))
+    private List<PostEntity> upvotedPosts;
+
+    @ManyToMany
+    @JoinTable(name="users_downvotes", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id"))
+    private List<PostEntity> downvotedPosts;
 }

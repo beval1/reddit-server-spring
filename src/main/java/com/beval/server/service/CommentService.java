@@ -7,7 +7,7 @@ import com.beval.server.security.UserPrincipal;
 import java.util.List;
 
 public interface CommentService {
-    List<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId);
+    List<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId, UserPrincipal principal);
 
     void createComment(String postId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal);
 
@@ -17,5 +17,6 @@ public interface CommentService {
     void deleteCommentOrReply(String commentId);
 
     void upvoteComment(String commentId, UserPrincipal userPrincipal);
-    void downVoteComment(String commentId, UserPrincipal userPrincipal);
+    void downvoteComment(String commentId, UserPrincipal userPrincipal);
+    void unvoteComment(String commentId, UserPrincipal userPrincipal);
 }
