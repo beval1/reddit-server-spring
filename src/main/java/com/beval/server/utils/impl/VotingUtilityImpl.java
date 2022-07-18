@@ -2,6 +2,7 @@ package com.beval.server.utils.impl;
 
 import com.beval.server.dto.interfaces.UpvotableDTO;
 import com.beval.server.exception.NotAuthorizedException;
+import com.beval.server.exception.ResourceArchivedException;
 import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.model.interfaces.Upvotable;
@@ -32,6 +33,11 @@ public class VotingUtilityImpl implements VotingUtility {
         Upvotable upvotableEntity = upvotableRepository.findById(Long.parseLong(entityId))
                 .orElseThrow(ResourceNotFoundException::new);
 
+        //archived posts and comments shouldn't be upvoted
+        if(upvotableEntity.isArchived()){
+            throw new ResourceArchivedException();
+        }
+
         switch (action) {
             case "upvote" -> {
                 if (upvotableEntity.getDownvotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))) {
@@ -53,6 +59,7 @@ public class VotingUtilityImpl implements VotingUtility {
                     upvotableEntity.getUpvotedUsers().remove(userEntity);
                 }
             }
+            //that would be developer mistake
             default -> throw new IllegalArgumentException();
         }
     }

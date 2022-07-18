@@ -3,6 +3,7 @@ package com.beval.server.service.impl;
 import com.beval.server.dto.payload.CreateCommentDTO;
 import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.exception.NotAuthorizedException;
+import com.beval.server.exception.ResourceArchivedException;
 import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
@@ -98,6 +99,11 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(ResourceNotFoundException::new);
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        //don't allow any comments on archived posts
+        if (postEntity.isArchived()){
+            throw  new ResourceArchivedException();
+        }
 
         commentRepository.save(
                 CommentEntity

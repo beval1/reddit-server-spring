@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     //exceptions for user authentications are later caught by the authenticationEntryPoint if not here
+
 //    @ExceptionHandler({DisabledException.class, BadCredentialsException.class,
 //            LockedException.class, CredentialsExpiredException.class, AccountExpiredException.class})
 //    public ResponseEntity<Object> handleDisabledException(Exception ex) {
@@ -22,7 +23,8 @@ public class GlobalExceptionHandler {
 //        );
 //    }
 
-    //default handler
+    //default handler for all exceptions but spring default handler does a good job
+
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<Object> handleDefault(Exception ex) {
 //        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
@@ -35,7 +37,7 @@ public class GlobalExceptionHandler {
 //        );
 //    }
 
-    @ExceptionHandler({ResourceNotFoundException.class, RoleNotFoundException.class,
+    @ExceptionHandler({ResourceNotFoundException.class, ResourceArchivedException.class, RoleNotFoundException.class,
             UserAlreadyExistsException.class, NotAuthorizedException.class})
     public ResponseEntity<Object> handleNotFound(ApiException ex) {
         return ResponseEntity.status(ex.getStatus())

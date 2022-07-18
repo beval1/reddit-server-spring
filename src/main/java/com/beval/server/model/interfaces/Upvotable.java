@@ -7,4 +7,5 @@ import java.util.Set;
 public interface Upvotable {
     Set<UserEntity> getUpvotedUsers();
     Set<UserEntity> getDownvotedUsers();
+    boolean isArchived();
 }

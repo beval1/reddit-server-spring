@@ -5,6 +5,7 @@ import lombok.Builder;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +19,10 @@ public abstract class UpvotableEntity extends BaseEntity implements Upvotable {
     @Builder.Default
     private Set<UserEntity> downvotedUsers = new HashSet<>();
 
+    @NotNull
+    @Builder.Default
+    private boolean archived;
+
     @Override
     public Set<UserEntity> getUpvotedUsers() {
         return upvotedUsers;
@@ -26,5 +31,10 @@ public abstract class UpvotableEntity extends BaseEntity implements Upvotable {
     @Override
     public Set<UserEntity> getDownvotedUsers() {
         return downvotedUsers;
+    }
+
+    @Override
+    public boolean isArchived() {
+        return archived;
     }
 }
