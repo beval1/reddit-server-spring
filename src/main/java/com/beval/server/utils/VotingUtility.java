@@ -6,7 +6,7 @@ import com.beval.server.model.interfaces.Upvotable;
 import com.beval.server.security.UserPrincipal;
 
 public interface VotingUtility {
-    void vote(String entityId, UserPrincipal userPrincipal, String action, String entityType);
+    void vote(String entityId, UserPrincipal userPrincipal, String action);
 
     void setUpvotedAndDownvotedForUser(Upvotable upvotable, UpvotableDTO upvotableDTO, UserEntity user);
 

@@ -32,7 +32,6 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final VotingUtility votingUtility;
-
     public PostServiceImpl(PostRepository postRepository, SubredditRepository subredditRepository,
                            CommentRepository commentRepository, UserRepository userRepository,
                            ModelMapper modelMapper, VotingUtility votingUtility) {
@@ -108,19 +107,19 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void upvotePost(String postId, UserPrincipal userPrincipal) {
-        votingUtility.vote(postId, userPrincipal, "upvote", "post");
+        votingUtility.vote(postId, userPrincipal, "upvote");
     }
 
     @Override
     @Transactional
     public void downvotePost(String postId, UserPrincipal userPrincipal) {
-        votingUtility.vote(postId, userPrincipal, "downvote", "post");
+        votingUtility.vote(postId, userPrincipal, "downvote");
     }
 
     @Override
     @Transactional
     public void unvotePost(String postId, UserPrincipal userPrincipal) {
-        votingUtility.vote(postId, userPrincipal, "unvote", "post");
+        votingUtility.vote(postId, userPrincipal, "unvote");
     }
 
 }

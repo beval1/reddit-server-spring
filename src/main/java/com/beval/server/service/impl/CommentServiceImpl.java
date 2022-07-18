@@ -158,19 +158,19 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void upvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
-        votingUtility.vote(commentId, userPrincipal, "upvote", "comment");
+        votingUtility.vote(commentId, userPrincipal, "upvote");
     }
 
     @Override
     @Transactional
     public void downvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
-        votingUtility.vote(commentId, userPrincipal, "downvote", "comment");
+        votingUtility.vote(commentId, userPrincipal, "downvote");
     }
 
     @Override
     @Transactional
     public void unvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
-        votingUtility.vote(commentId, userPrincipal, "unvote", "comment");
+        votingUtility.vote(commentId, userPrincipal, "unvote");
     }
 
 

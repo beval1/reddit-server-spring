@@ -1,13 +1,13 @@
 package com.beval.server.model.entity;
 
-import com.beval.server.model.interfaces.Upvotable;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.beval.server.config.AppConstants.MAXIMUM_TITLE_LENGTH;
 import static com.beval.server.config.AppConstants.MINIMUM_TITLE_LENGTH;
@@ -19,7 +19,7 @@ import static com.beval.server.config.AppConstants.MINIMUM_TITLE_LENGTH;
 @Builder
 @Entity
 @Table(name = "posts")
-public class PostEntity extends BaseEntity implements Upvotable {
+public class PostEntity extends UpvotableEntity {
     @NotNull
     @Length(max = MAXIMUM_TITLE_LENGTH, min = MINIMUM_TITLE_LENGTH)
     private String title;
@@ -32,11 +32,4 @@ public class PostEntity extends BaseEntity implements Upvotable {
     @ManyToOne
     private SubredditEntity subreddit;
 
-    @ManyToMany
-    @Builder.Default
-    private Set<UserEntity> upvotedUsers = new HashSet<>();
-
-    @ManyToMany
-    @Builder.Default
-    private Set<UserEntity> downvotedUsers = new HashSet<>();
 }
