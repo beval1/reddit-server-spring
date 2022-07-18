@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
             //set upvoted and downvoted attributes of DTO
             setCommentUpvotedAndDownvotedForUser(commentEntities.get(i), commentDTOS.get(i), userEntity);
             //set upvotes and downvotes for DTO
-            setCommentUpvotesAndDownvotes(commentEntities.get(i), commentDTOS.get(i));
+            setCommentVotes(commentEntities.get(i), commentDTOS.get(i));
 
             List<CommentEntity> repliesEntities = commentRepository
                     .findAllCommentsByPostAndParentComment(post, commentEntities.get(i));
@@ -80,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
                 //set upvoted and downvoted attributes of DTO
                 setCommentUpvotedAndDownvotedForUser(repliesEntities.get(k), repliesDTOs.get(k), userEntity);
                 //set upvotes and downvotes for DTO
-                setCommentUpvotesAndDownvotes(repliesEntities.get(k), repliesDTOs.get(k));
+                setCommentVotes(repliesEntities.get(k), repliesDTOs.get(k));
             }
 
             //append to parentComment DTO
@@ -105,10 +105,9 @@ public class CommentServiceImpl implements CommentService {
             commentDTO.setDownVotedByUser(true);
         }
     }
-    private void setCommentUpvotesAndDownvotes(@NotNull CommentEntity commentEntity,
-                                               @NotNull CommentDTO commentDTO){
-        commentDTO.setUpVotes(commentEntity.getUpVotedUsers().size());
-        commentDTO.setDownVotes(commentEntity.getDownVotedUsers().size());
+    private void setCommentVotes(@NotNull CommentEntity commentEntity,
+                                 @NotNull CommentDTO commentDTO){
+        commentDTO.setVotes(commentEntity.getUpVotedUsers().size() - commentEntity.getDownVotedUsers().size());
     }
 
     @Override
