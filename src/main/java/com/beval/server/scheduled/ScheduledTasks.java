@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -29,7 +30,8 @@ public class ScheduledTasks {
         this.commentRepository = commentRepository;
     }
 
-    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "40 * * * * *")
+    @Transactional
     public void archiveOldPosts() {
         log.info("Starting the job of archiving posts...");
         log.info("The time now: {}", dateFormat.format(new Date()));

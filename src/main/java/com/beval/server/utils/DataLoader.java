@@ -80,11 +80,10 @@ public class DataLoader implements ApplicationRunner {
         );
         post2.setCreatedOn(LocalDateTime.of(2020, 1, 1, 1, 1));
 
-
         CommentEntity commentEntity = commentRepository.save(
                 CommentEntity
                         .builder()
-                        .post(post)
+                        .post(post2)
                         .content("lalalalal")
                         .author(user)
                         .parentComment(null)
