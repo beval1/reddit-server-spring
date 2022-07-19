@@ -32,9 +32,9 @@ public class DataLoader implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) {
         //set user roles
-        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ADMIN).build());
+        RoleEntity adminRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ADMIN).build());
         RoleEntity userRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.USER).build());
-        roleRepository.save(RoleEntity.builder().roleName(RoleEnum.MODERATOR).build());
+        //roleRepository.save(RoleEntity.builder().roleName(RoleEnum.MODERATOR).build());
 
         List<RoleEntity> userRolesList = List.of(userRole);
 
@@ -49,6 +49,20 @@ public class DataLoader implements ApplicationRunner {
                         .firstName("Test")
                         .lastName("Test")
                         .email("test@test.com")
+                        .build()
+        );
+
+        userRepository.save(
+                UserEntity
+                        .builder()
+                        .username("admin")
+                        .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                        .enabled(true)
+                        .roles(List.of(adminRole))
+                        .birthdate(null)
+                        .firstName("Admin")
+                        .lastName("Adminov")
+                        .email("admin@admin.com")
                         .build()
         );
 

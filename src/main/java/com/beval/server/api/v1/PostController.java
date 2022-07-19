@@ -7,6 +7,7 @@ import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,6 +64,7 @@ public class PostController {
                 );
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR isOwner(#postId, principal)")
     @DeleteMapping(value = "/posts/post/{postId}")
     public ResponseEntity<ResponseDTO> createPost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,

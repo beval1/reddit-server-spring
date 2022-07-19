@@ -1,7 +1,9 @@
 package com.beval.server.exception;
 
 import com.beval.server.dto.response.ResponseDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -50,5 +52,17 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    //@PreAuthorize handler
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<Object> handleAccessDenied(Exception ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message(ex.getMessage())
+                                .content(null)
+                                .build()
+                );
+    }
 
 }

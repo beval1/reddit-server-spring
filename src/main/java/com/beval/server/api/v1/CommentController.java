@@ -7,6 +7,7 @@ import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,9 +90,7 @@ public class CommentController {
                 );
     }
 
-    //check if user is either the owner of the comment or admin
-    //@PreAuthorize()
-    //TODO: check for user role
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR isOwner(#commentId, principal)")
     @PatchMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> updateCommentOrReply(
             @PathVariable String commentId,
@@ -110,7 +109,7 @@ public class CommentController {
                 );
     }
 
-    //TODO: check for user role
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR isOwner(#commentId, principal)")
     @DeleteMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> deleteCommentOrReply(
             @PathVariable String commentId,

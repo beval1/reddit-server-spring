@@ -142,6 +142,11 @@ public class CommentServiceImpl implements CommentService {
         CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(ResourceNotFoundException::new);
 
+        //Don't allow update if comment is archived
+        if (commentEntity.isArchived()){
+            throw new ResourceArchivedException();
+        }
+
         commentEntity.setContent(createCommentDTO.getContent());
     }
 

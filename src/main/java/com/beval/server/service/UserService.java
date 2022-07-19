@@ -1,9 +1,9 @@
 package com.beval.server.service;
 
-import com.beval.server.dto.payload.SigninDTO;
-import com.beval.server.dto.payload.SignupDTO;
+import com.beval.server.security.UserPrincipal;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface UserService {
-    String signInUser(SigninDTO signinDto);
-    void signUpUser(SignupDTO signupDto);
+    boolean isOwner(Long id, UserPrincipal userPrincipal);
 }

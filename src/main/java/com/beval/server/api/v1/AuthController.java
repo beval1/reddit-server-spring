@@ -4,7 +4,7 @@ import com.beval.server.dto.payload.SigninDTO;
 import com.beval.server.dto.payload.SignupDTO;
 import com.beval.server.dto.response.JwtResponseDTO;
 import com.beval.server.dto.response.ResponseDTO;
-import com.beval.server.service.UserService;
+import com.beval.server.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api/v1/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService userService;
 
-    public AuthController(UserService userService) {
+    public AuthController(AuthService userService) {
         this.userService = userService;
     }
 

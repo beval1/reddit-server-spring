@@ -1,83 +1,32 @@
 package com.beval.server.service.impl;
 
-import com.beval.server.dto.payload.SigninDTO;
-import com.beval.server.dto.payload.SignupDTO;
-import com.beval.server.exception.RoleNotFoundException;
-import com.beval.server.exception.UserAlreadyExistsException;
-import com.beval.server.model.entity.RoleEntity;
+import com.beval.server.exception.NotAuthorizedException;
+import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.model.entity.UserEntity;
-import com.beval.server.model.enums.RoleEnum;
-import com.beval.server.repository.RoleRepository;
+import com.beval.server.model.interfaces.Upvotable;
+import com.beval.server.repository.UpvotableRepository;
 import com.beval.server.repository.UserRepository;
-import com.beval.server.security.JwtTokenProvider;
+import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.UserService;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final ModelMapper modelMapper;
-    private final RoleRepository roleRepository;
+    private final UpvotableRepository upvotableRepository;
 
-    public UserServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
-                           UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper,
-                           RoleRepository roleRepository) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
+    public UserServiceImpl(UserRepository userRepository, UpvotableRepository upvotableRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.modelMapper = modelMapper;
-        this.roleRepository = roleRepository;
+        this.upvotableRepository = upvotableRepository;
     }
 
     @Override
-    public String signInUser(SigninDTO signinDto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                signinDto.getUsernameOrEmail(), signinDto.getPassword()));
+    public boolean isOwner(Long resourceId, UserPrincipal userPrincipal) {
+        UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
+                .orElseThrow(NotAuthorizedException::new);
+        Upvotable upvotable = upvotableRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return jwtTokenProvider.generateJwtToken(authentication);
-    }
-
-    @Override
-    public void signUpUser(SignupDTO signupDto) {
-        //check if username already exist
-        if (userRepository.existsByUsername(signupDto.getUsername())) {
-            throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with such username already exists!");
-        }
-
-        //check if email already exists
-        if (userRepository.existsByEmail(signupDto.getEmail())) {
-            throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with such email already exists!");
-        }
-
-
-        RoleEntity role = roleRepository.findByRoleName(RoleEnum.USER).orElseThrow(()
-                -> new RoleNotFoundException(HttpStatus.NOT_FOUND, "No Default User Role in the database"));
-
-        //create new user
-        UserEntity user = modelMapper.map(signupDto, UserEntity.class);
-        user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
-        user.setRoles(List.of(role));
-        user.setEnabled(true);
-        user.setLocked(false);
-        user.setAccountExpired(false);
-        user.setCredentialsExpired(false);
-
-        userRepository.save(user);
+        return upvotable.getAuthor().getId().equals(loggedUser.getId());
     }
 }

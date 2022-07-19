@@ -30,7 +30,7 @@ public class ScheduledTasks {
         this.commentRepository = commentRepository;
     }
 
-    @Scheduled(cron = "40 * * * * *")
+    @Scheduled(cron = "@daily")
     @Transactional
     public void archiveOldPosts() {
         log.info("Starting the job of archiving posts...");

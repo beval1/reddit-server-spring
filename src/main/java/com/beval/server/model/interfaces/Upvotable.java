@@ -9,4 +9,5 @@ public interface Upvotable {
     Set<UserEntity> getDownvotedUsers();
     boolean isArchived();
     void setArchived(boolean isArchived);
+    UserEntity getAuthor();
 }

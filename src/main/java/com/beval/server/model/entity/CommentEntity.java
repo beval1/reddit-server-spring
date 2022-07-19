@@ -1,6 +1,10 @@
 package com.beval.server.model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
@@ -12,17 +16,13 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "comments")
 public class CommentEntity extends UpvotableEntity {
     @NotNull
     @Length(max = 255)
     private String content;
-
-    @OneToOne
-    @NotNull
-    private UserEntity author;
 
     @OneToOne
     private CommentEntity parentComment;
