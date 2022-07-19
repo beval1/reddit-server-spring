@@ -37,4 +37,9 @@ public abstract class UpvotableEntity extends BaseEntity implements Upvotable {
     public boolean isArchived() {
         return archived;
     }
+
+    @Override
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
 }

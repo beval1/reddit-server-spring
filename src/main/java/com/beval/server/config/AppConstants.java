@@ -17,5 +17,7 @@ public final class AppConstants {
     public static final int MAXIMUM_SUBREDDIT_DESCRIPTION_LENGTH = 350;
     public static final int MINIMUM_SUBREDDIT_DESCRIPTION_LENGTH = 20;
 
+    public static final long POST_MONTHS_TO_ARCHIVE = 6;
+
 
 }

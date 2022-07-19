@@ -1,4 +1,4 @@
-package com.beval.server.config;
+package com.beval.server.utils;
 
 import com.beval.server.model.entity.*;
 import com.beval.server.model.enums.RoleEnum;
@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -68,6 +69,16 @@ public class DataLoader implements ApplicationRunner {
                     .subreddit(subreddit)
                     .build()
         );
+
+        PostEntity post2 = postRepository.save(
+                PostEntity
+                        .builder()
+                        .title("vtori testov post")
+                        .author(user)
+                        .subreddit(subreddit)
+                        .build()
+        );
+        post2.setCreatedOn(LocalDateTime.of(2020, 1, 1, 1, 1));
 
 
         CommentEntity commentEntity = commentRepository.save(
