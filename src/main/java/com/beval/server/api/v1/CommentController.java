@@ -90,7 +90,7 @@ public class CommentController {
                 );
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR isOwner(#commentId, principal)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)")
     @PatchMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> updateCommentOrReply(
             @PathVariable String commentId,
@@ -109,7 +109,7 @@ public class CommentController {
                 );
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR isOwner(#commentId, principal)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)")
     @DeleteMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> deleteCommentOrReply(
             @PathVariable String commentId,

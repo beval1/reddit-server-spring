@@ -64,7 +64,7 @@ public class PostController {
                 );
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR isOwner(#postId, principal)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#postId, principal)")
     @DeleteMapping(value = "/posts/post/{postId}")
     public ResponseEntity<ResponseDTO> createPost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
