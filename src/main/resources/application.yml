@@ -1,6 +1,10 @@
 app:
     jwtExpirationMs: 60000000
     jwtSecret: ${JWT_SECRET_KEY}
+cloudinary:
+    apiKey: 548943318855874
+    apiSecret: ${CLOUDINARY_API_SECRET}
+    cloudName: djog8qqis
 server:
     port: 8084
 #logging:

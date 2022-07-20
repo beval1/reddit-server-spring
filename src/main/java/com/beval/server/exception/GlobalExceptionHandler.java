@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
 //    }
 
     @ExceptionHandler({ResourceNotFoundException.class, ResourceArchivedException.class, RoleNotFoundException.class,
-            UserAlreadyExistsException.class, NotAuthorizedException.class})
+            UserAlreadyExistsException.class, NotAuthorizedException.class, CloudinaryException.class})
     public ResponseEntity<Object> handleNotFound(ApiException ex) {
         return ResponseEntity.status(ex.getStatus())
                 .body(

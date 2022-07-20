@@ -15,6 +15,7 @@ public class MyProfileDTO {
     private String lastName;
     private String email;
     private LocalDate birthdate;
-    private String profileImageUrl;
     private LocalDateTime createdOn;
+    private ImageDTO profileImage;
+    private ImageDTO bannerImage;
 }

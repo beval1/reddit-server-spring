@@ -19,5 +19,7 @@ public final class AppConstants {
 
     public static final long POST_MONTHS_TO_ARCHIVE = 6;
 
+//    public static final String DEFAULT_USER_PROFILE_IMAGE_URL = "";
+//    public static final String DEFAULT_USER_BANNER_IMAGE_URL = "";
 
 }

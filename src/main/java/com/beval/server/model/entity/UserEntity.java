@@ -31,7 +31,14 @@ public class UserEntity extends BaseEntity {
     @NotNull
     private String email;
     private LocalDate birthdate;
-    private String profileImageUrl;
+    @OneToOne
+    private ImageEntity profileImage;
+    @OneToOne
+    private ImageEntity bannerImage;
+    private int postKarma;
+    private int commentKarma;
+    private int awardeeKarma;
+    private int awarderKarma;
     private boolean enabled;
     private boolean locked;
     private boolean accountExpired;
@@ -54,4 +61,5 @@ public class UserEntity extends BaseEntity {
     @JoinTable(name="users_downvotes", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id"))
     private List<PostEntity> downvotedPosts;
+
 }

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class UserProfileDTO {
     private String username;
-    private String profileImageUrl;
+    private ImageDTO profileImage;
+    private ImageDTO bannerImage;
     private LocalDateTime createdOn;
 }
