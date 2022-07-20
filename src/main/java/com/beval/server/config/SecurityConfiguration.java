@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                 .antMatchers(HttpMethod.GET,"/api/v1/subreddits").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/v1/comments/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/users/**").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
