@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import static com.beval.server.config.AppConstants.DEFAULT_USER_BANNER_IMAGE_CLOUDINARY_FOLDER;
+import static com.beval.server.config.AppConstants.DEFAULT_USER_PROFILE_IMAGE_CLOUDINARY_FOLDER;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -59,7 +62,8 @@ public class UserServiceImpl implements UserService {
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
 
         //first upload the new image
-        ImageEntity imageEntity = cloudinaryService.upload(imageUploadDTO);
+        ImageEntity imageEntity = cloudinaryService.upload(imageUploadDTO,
+                DEFAULT_USER_PROFILE_IMAGE_CLOUDINARY_FOLDER);
 
         //if the new image is uploaded
         if (imageEntity != null && userEntity.getProfileImage() != null){
@@ -77,7 +81,8 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
 
-        ImageEntity imageEntity = cloudinaryService.upload(imageUploadDTO);
+        ImageEntity imageEntity = cloudinaryService.upload(imageUploadDTO,
+                DEFAULT_USER_BANNER_IMAGE_CLOUDINARY_FOLDER);
 
         if (imageEntity != null && userEntity.getBannerImage() != null){
             cloudinaryService.delete(userEntity.getBannerImage());

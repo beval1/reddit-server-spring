@@ -4,6 +4,7 @@ import com.beval.server.dto.payload.ImageUploadPayloadDTO;
 import com.beval.server.model.entity.ImageEntity;
 
 public interface CloudinaryService {
+    ImageEntity upload(ImageUploadPayloadDTO imageUploadDTO, String folderName);
     ImageEntity upload(ImageUploadPayloadDTO imageUploadDTO);
     boolean delete(ImageEntity imageEntity);
 }

@@ -30,17 +30,28 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     }
 
     @Override
-    public ImageEntity upload(ImageUploadPayloadDTO imageUploadDTO) {
+    public ImageEntity upload(ImageUploadPayloadDTO imageUploadDTO){
+        return upload(imageUploadDTO, null);
+    }
+    @Override
+    public ImageEntity upload(ImageUploadPayloadDTO imageUploadDTO, String folderName) {
 
         File tempFile = null;
         try {
             tempFile = File.createTempFile(TEMP_FILE, imageUploadDTO.getMultipartFile().getOriginalFilename());
             imageUploadDTO.getMultipartFile().transferTo(tempFile);
 
+            Map<String, String> options = null;
+            if (folderName != null){
+                options = Map.of(
+                        "folder", folderName
+                );
+            }
+
             @SuppressWarnings("unchecked")
             Map<String, String> uploadResult = cloudinary.
                     uploader().
-                    upload(tempFile, Map.of());
+                    upload(tempFile, options);
 
             String url = uploadResult.getOrDefault(URL,
                     "https://i.pinimg.com/originals/c5/21/64/c52164749f7460c1ededf8992cd9a6ec.jpg");
