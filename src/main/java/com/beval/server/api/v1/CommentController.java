@@ -2,18 +2,21 @@ package com.beval.server.api.v1;
 
 import com.beval.server.dto.payload.CreateCommentDTO;
 import com.beval.server.dto.response.CommentDTO;
+import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.ResponseDTO;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CommentService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static com.beval.server.config.AppConstants.API_BASE;
+import static com.beval.server.config.AppConstants.*;
 
 @RestController
 @RequestMapping(value = API_BASE)
@@ -27,9 +30,14 @@ public class CommentController {
 
     @GetMapping(value = "/comments/{postId}")
     public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable String postId,
-                                                             @AuthenticationPrincipal UserPrincipal principal) {
-        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(
-                postId, null, principal);
+                                                             @AuthenticationPrincipal UserPrincipal principal,
+                                                             @PageableDefault(page = PAGEABLE_DEFAULT_PAGE_NUMBER, size = PAGEABLE_DEFAULT_PAGE_SIZE)
+                                                             @SortDefault.SortDefaults({
+                                                                     @SortDefault(sort = PAGEABLE_DEFAULT_SORT_BY,
+                                                                             direction = Sort.Direction.DESC),
+                                                             }) Pageable pageable) {
+        PageableDTO<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(
+                postId, null, principal, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -43,8 +51,13 @@ public class CommentController {
     @GetMapping(value = "/comments/{postId}/comment/{commentId}")
     public ResponseEntity<ResponseDTO> getAllRepliesForComment(@PathVariable String postId,
                                                                @PathVariable String commentId,
-                                                               @AuthenticationPrincipal UserPrincipal principal) {
-        List<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, commentId, principal);
+                                                               @AuthenticationPrincipal UserPrincipal principal,
+                                                               @PageableDefault(page = PAGEABLE_DEFAULT_PAGE_NUMBER, size = PAGEABLE_DEFAULT_PAGE_SIZE)
+                                                               @SortDefault.SortDefaults({
+                                                                       @SortDefault(sort = "createdOn", direction = Sort.Direction.DESC),
+                                                               }) Pageable pageable) {
+        PageableDTO<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(postId, commentId,
+                principal, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -131,7 +144,7 @@ public class CommentController {
     public ResponseEntity<ResponseDTO> upvoteComment(
             @PathVariable String commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
-            ) {
+    ) {
         commentService.upvoteComment(commentId, userPrincipal);
 
         return ResponseEntity

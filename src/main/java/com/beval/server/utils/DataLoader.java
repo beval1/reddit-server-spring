@@ -97,8 +97,26 @@ public class DataLoader implements ApplicationRunner {
         CommentEntity commentEntity = commentRepository.save(
                 CommentEntity
                         .builder()
-                        .post(post2)
+                        .post(post)
                         .content("lalalalal")
+                        .author(user)
+                        .parentComment(null)
+                        .build()
+        );
+        CommentEntity comment2 = commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(post)
+                        .content("bababababababa")
+                        .author(user)
+                        .parentComment(null)
+                        .build()
+        );
+        CommentEntity comment3 = commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(post)
+                        .content("hahahahaahahahaha")
                         .author(user)
                         .parentComment(null)
                         .build()

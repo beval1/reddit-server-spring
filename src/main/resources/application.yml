@@ -11,6 +11,12 @@ server:
 #    level:
 #        root: debug
 spring:
+    data:
+        web:
+            pageable:
+                one-indexed-parameters: true
+#                max-page-size: 100
+#                default-page-size: 20
     datasource:
         driverClassName: com.mysql.cj.jdbc.Driver
         password: ${DB_PASSWORD}

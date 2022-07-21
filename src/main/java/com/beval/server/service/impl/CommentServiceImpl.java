@@ -2,6 +2,7 @@ package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.CreateCommentDTO;
 import com.beval.server.dto.response.CommentDTO;
+import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceArchivedException;
 import com.beval.server.exception.ResourceNotFoundException;
@@ -16,6 +17,8 @@ import com.beval.server.service.CommentService;
 import com.beval.server.utils.VotingUtility;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -41,11 +44,14 @@ public class CommentServiceImpl implements CommentService {
         this.votingUtility = votingUtility;
     }
 
-    //TODO: make this function recursive
     @Override
     @Transactional
-    public List<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId,
-                                                                  UserPrincipal userPrincipal) {
+    public PageableDTO<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId,
+                                                                         UserPrincipal userPrincipal, Pageable pageable) {
+
+//        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+//                : Sort.by(sortBy).descending();
+//        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         PostEntity post = postRepository.findById(Long.parseLong(postId))
                 .orElseThrow(ResourceNotFoundException::new);
@@ -57,40 +63,52 @@ public class CommentServiceImpl implements CommentService {
                     .orElseThrow(ResourceNotFoundException::new);
         }
         UserEntity userEntity = null;
-        if (userPrincipal != null){
+        if (userPrincipal != null) {
             userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
                     .orElseThrow(NotAuthorizedException::new);
         }
-        List<CommentEntity> commentEntities = commentRepository
-                .findAllCommentsByPostAndParentComment(post, parentComment);
-        List<CommentDTO> commentDTOS = Arrays.asList(modelMapper.map(commentEntities, CommentDTO[].class));
+        Page<CommentEntity> commentEntities = commentRepository
+                .findAllCommentsByPostAndParentComment(post, parentComment, pageable);
+        List<CommentDTO> commentDTOS = Arrays.asList(modelMapper.map(commentEntities.getContent(), CommentDTO[].class));
 
         for (int i = 0; i < commentDTOS.size(); i++) {
             //set upvoted and downvoted attributes of DTO
-            votingUtility.setUpvotedAndDownvotedForUser(commentEntities.get(i), commentDTOS.get(i), userEntity);
+            votingUtility.setUpvotedAndDownvotedForUser(commentEntities.getContent().get(i), commentDTOS.get(i), userEntity);
             //set upvotes and downvotes for DTO
-            votingUtility.setVotes(commentEntities.get(i), commentDTOS.get(i));
+            votingUtility.setVotes(commentEntities.getContent().get(i), commentDTOS.get(i));
 
-            List<CommentEntity> repliesEntities = commentRepository
-                    .findAllCommentsByPostAndParentComment(post, commentEntities.get(i));
-            List<CommentDTO> repliesDTOs = Arrays.asList(modelMapper.map(repliesEntities, CommentDTO[].class));
+            Page<CommentEntity> repliesEntities = commentRepository
+                    .findAllCommentsByPostAndParentComment(post, commentEntities.getContent().get(i), pageable);
+            List<CommentDTO> repliesDTOs = Arrays.asList(modelMapper.map(repliesEntities.getContent(), CommentDTO[].class));
 
             //set size of third level replies and replies voted status for the principal
             for (int k = 0; k < repliesDTOs.size(); k++) {
                 int repliesCount = commentRepository
-                        .countAllByPostAndParentComment(post, repliesEntities.get(k));
+                        .countAllByPostAndParentComment(post, repliesEntities.getContent().get(k));
                 repliesDTOs.get(k).setRepliesCount(repliesCount);
                 //set upvoted and downvoted attributes of DTO
-                votingUtility.setUpvotedAndDownvotedForUser(repliesEntities.get(k), repliesDTOs.get(k), userEntity);
+                votingUtility.setUpvotedAndDownvotedForUser(repliesEntities.getContent().get(k), repliesDTOs.get(k), userEntity);
                 //set upvotes and downvotes for DTO
-                votingUtility.setVotes(repliesEntities.get(k), repliesDTOs.get(k));
+                votingUtility.setVotes(repliesEntities.getContent().get(k), repliesDTOs.get(k));
             }
 
             //append to parentComment DTO
             commentDTOS.get(i).setReplies(repliesDTOs);
             commentDTOS.get(i).setRepliesCount(repliesDTOs.size());
         }
-        return commentDTOS;
+
+        return PageableDTO
+                .<CommentDTO>builder()
+                .pageContent(commentDTOS)
+                .pageNo(commentEntities.getNumber() + 1)
+                .pageSize(commentEntities.getSize())
+                .pageElements(commentDTOS.size())
+                .totalElements(commentEntities.getTotalElements())
+                .totalPages(commentEntities.getTotalPages())
+                .last(commentEntities.isLast())
+                .first(commentEntities.isFirst())
+                .sortedBy(pageable.getSort().toString())
+                .build();
     }
 
     @Override
@@ -101,8 +119,8 @@ public class CommentServiceImpl implements CommentService {
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
 
         //don't allow any comments on archived posts
-        if (postEntity.isArchived()){
-            throw  new ResourceArchivedException();
+        if (postEntity.isArchived()) {
+            throw new ResourceArchivedException();
         }
 
         commentRepository.save(
@@ -143,7 +161,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(ResourceNotFoundException::new);
 
         //Don't allow update if comment is archived
-        if (commentEntity.isArchived()){
+        if (commentEntity.isArchived()) {
             throw new ResourceArchivedException();
         }
 
