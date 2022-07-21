@@ -1,7 +1,5 @@
 package com.beval.server.config;
 
-import org.springframework.data.domain.Sort;
-
 import java.util.List;
 
 public final class AppConstants {
@@ -21,10 +19,8 @@ public final class AppConstants {
     public static final long POST_MONTHS_TO_ARCHIVE = 6;
     public static final String DEFAULT_USER_PROFILE_IMAGE_CLOUDINARY_FOLDER = PROJECT_NAME + "/users/profile-images";
     public static final String DEFAULT_USER_BANNER_IMAGE_CLOUDINARY_FOLDER = PROJECT_NAME + "/users/banner-images";
-    public static final int PAGEABLE_DEFAULT_PAGE_NUMBER = 1;
+    public static final int PAGEABLE_DEFAULT_PAGE_NUMBER = 0;
     public  static final int PAGEABLE_DEFAULT_PAGE_SIZE = 20;
-    public static final String PAGEABLE_DEFAULT_SORT_BY = "createdOn";
-    public static final String PAGEABLE_DEFAULT_SORT_DIRECTION = Sort.Direction.DESC.name();
 
 //    public static final String DEFAULT_USER_PROFILE_IMAGE_URL = "";
 //    public static final String DEFAULT_USER_BANNER_IMAGE_URL = "";

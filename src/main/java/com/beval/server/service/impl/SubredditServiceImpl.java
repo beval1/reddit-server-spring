@@ -1,6 +1,7 @@
 package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.CreateSubredditDTO;
+import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.SubredditDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
@@ -11,6 +12,8 @@ import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.SubredditService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,9 +33,21 @@ public class SubredditServiceImpl implements SubredditService {
     }
 
     @Override
-    public List<SubredditDTO> getAllSubreddits() {
-        List<SubredditEntity> subredditEntities = subredditRepository.findAll();
-        return Arrays.asList(modelMapper.map(subredditEntities, SubredditDTO[].class));
+    public PageableDTO<SubredditDTO> getAllSubreddits(Pageable pageable) {
+        Page<SubredditEntity> subredditEntities = subredditRepository.findAll(pageable);
+        List<SubredditDTO> subredditDTOS = Arrays.asList(modelMapper.map(subredditEntities.getContent(), SubredditDTO[].class));
+        return PageableDTO
+                .<SubredditDTO>builder()
+                .pageContent(subredditDTOS)
+                .pageNo(subredditEntities.getNumber() + 1)
+                .pageSize(subredditEntities.getSize())
+                .pageElements(subredditDTOS.size())
+                .totalElements(subredditEntities.getTotalElements())
+                .totalPages(subredditEntities.getTotalPages())
+                .last(subredditEntities.isLast())
+                .first(subredditEntities.isFirst())
+                .sortedBy(pageable.getSort().toString())
+                .build();
     }
 
     @Override

@@ -1,13 +1,13 @@
 package com.beval.server.service;
 
 import com.beval.server.dto.payload.CreatePostDTO;
+import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.security.UserPrincipal;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface PostService {
-    List<PostDTO> getAllPostsForSubreddit(String subredditId, UserPrincipal userPrincipal);
+    PageableDTO<PostDTO> getAllPostsForSubreddit(String subredditId, UserPrincipal userPrincipal, Pageable pageable);
 
     void createPostForSubreddit(CreatePostDTO createPostDTO, UserPrincipal principal, String subredditId);
     void deletePost(String postId);

@@ -33,7 +33,7 @@ public class CommentController {
                                                              @AuthenticationPrincipal UserPrincipal principal,
                                                              @PageableDefault(page = PAGEABLE_DEFAULT_PAGE_NUMBER, size = PAGEABLE_DEFAULT_PAGE_SIZE)
                                                              @SortDefault.SortDefaults({
-                                                                     @SortDefault(sort = PAGEABLE_DEFAULT_SORT_BY,
+                                                                     @SortDefault(sort = "createdOn",
                                                                              direction = Sort.Direction.DESC),
                                                              }) Pageable pageable) {
         PageableDTO<CommentDTO> comments = commentService.getAllCommentsForPostAndParentComment(

@@ -1,6 +1,7 @@
 package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.CreatePostDTO;
+import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
@@ -17,6 +18,8 @@ import com.beval.server.service.PostService;
 import com.beval.server.utils.VotingUtility;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -45,7 +48,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public List<PostDTO> getAllPostsForSubreddit(String subredditId, UserPrincipal userPrincipal) {
+    public PageableDTO<PostDTO> getAllPostsForSubreddit(String subredditId, UserPrincipal userPrincipal, Pageable pageable) {
         SubredditEntity subredditEntity = subredditRepository.findById(Long.parseLong(subredditId))
                 .orElseThrow(ResourceNotFoundException::new);
         //user isn't required to be logged in
@@ -55,13 +58,25 @@ public class PostServiceImpl implements PostService {
                     userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
         }
 
-        List<PostEntity> postEntities = postRepository.findAllBySubredditOrderByCreatedOn(subredditEntity);
-        List<PostDTO> postDTOS = Arrays.asList(modelMapper.map(postEntities, PostDTO[].class));
+        Page<PostEntity> postEntities = postRepository.findAllBySubredditOrderByCreatedOn(subredditEntity, pageable);
+        List<PostDTO> postDTOS = Arrays.asList(modelMapper.map(postEntities.getContent(), PostDTO[].class));
         for (int i = 0; i < postDTOS.size(); i++) {
-            votingUtility.setUpvotedAndDownvotedForUser(postEntities.get(i), postDTOS.get(i), userEntity);
-            votingUtility.setVotes(postEntities.get(i), postDTOS.get(i));
+            votingUtility.setUpvotedAndDownvotedForUser(postEntities.getContent().get(i), postDTOS.get(i), userEntity);
+            votingUtility.setVotes(postEntities.getContent().get(i), postDTOS.get(i));
         }
-        return postDTOS;
+
+        return PageableDTO
+                .<PostDTO>builder()
+                .pageContent(postDTOS)
+                .pageNo(postEntities.getNumber() + 1)
+                .pageSize(postEntities.getSize())
+                .pageElements(postDTOS.size())
+                .totalElements(postEntities.getTotalElements())
+                .totalPages(postEntities.getTotalPages())
+                .last(postEntities.isLast())
+                .first(postEntities.isFirst())
+                .sortedBy(pageable.getSort().toString())
+                .build();
     }
 
     @Override

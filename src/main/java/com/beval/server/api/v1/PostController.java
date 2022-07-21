@@ -1,19 +1,22 @@
 package com.beval.server.api.v1;
 
 import com.beval.server.dto.payload.CreatePostDTO;
+import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.dto.response.ResponseDTO;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.PostService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static com.beval.server.config.AppConstants.API_BASE;
+import static com.beval.server.config.AppConstants.*;
 
 @RestController
 @RequestMapping(value = API_BASE)
@@ -27,9 +30,13 @@ public class PostController {
     @GetMapping(value = "/posts/{subredditId}")
     public ResponseEntity<ResponseDTO> getAllPostsForSubreddit(
             @PathVariable(value = "subredditId") String subredditId,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PageableDefault(page = PAGEABLE_DEFAULT_PAGE_NUMBER, size = PAGEABLE_DEFAULT_PAGE_SIZE)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "createdOn", direction = Sort.Direction.DESC),
+            }) Pageable pageable) {
 
-        List<PostDTO> posts = postService.getAllPostsForSubreddit(subredditId, userPrincipal);
+        PageableDTO<PostDTO> posts = postService.getAllPostsForSubreddit(subredditId, userPrincipal, pageable);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
