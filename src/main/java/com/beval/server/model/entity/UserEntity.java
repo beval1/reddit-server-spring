@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static com.beval.server.config.AppConstants.MAXIMUM_USERNAME_LENGTH;
 import static com.beval.server.config.AppConstants.MINIMUM_USERNAME_LENGTH;
@@ -20,7 +21,7 @@ import static com.beval.server.config.AppConstants.MINIMUM_USERNAME_LENGTH;
 @Table(name="users")
 public class UserEntity extends BaseEntity {
     @NotNull
-    @Length(max= MAXIMUM_USERNAME_LENGTH, min = MINIMUM_USERNAME_LENGTH)
+    @Length(max = MAXIMUM_USERNAME_LENGTH, min = MINIMUM_USERNAME_LENGTH)
     private String username;
     @NotNull
     private String password;
@@ -50,7 +51,7 @@ public class UserEntity extends BaseEntity {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name="users_roles", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<RoleEntity> roles;
+    private Set<RoleEntity> roles;
 
     @ManyToMany
     @JoinTable(name="users_upvotes", joinColumns = @JoinColumn(name = "user_id"),

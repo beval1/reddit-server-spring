@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -73,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
         //create new user
         UserEntity user = modelMapper.map(signupDto, UserEntity.class);
         user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
-        user.setRoles(List.of(role));
+        user.setRoles(Set.of(role));
         user.setEnabled(true);
         user.setLocked(false);
         user.setAccountExpired(false);

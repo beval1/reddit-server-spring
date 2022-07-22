@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class DataLoader implements ApplicationRunner {
@@ -34,7 +35,6 @@ public class DataLoader implements ApplicationRunner {
         //set user roles
         RoleEntity adminRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ADMIN).build());
         RoleEntity userRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.USER).build());
-        //roleRepository.save(RoleEntity.builder().roleName(RoleEnum.MODERATOR).build());
 
         List<RoleEntity> userRolesList = List.of(userRole);
 
@@ -44,7 +44,7 @@ public class DataLoader implements ApplicationRunner {
                         .username("test1")
                         .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
                         .enabled(true)
-                        .roles(userRolesList)
+                        .roles(Set.of(userRole))
                         .birthdate(null)
                         .firstName("Test")
                         .lastName("Test")
@@ -58,7 +58,7 @@ public class DataLoader implements ApplicationRunner {
                         .username("admin")
                         .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
                         .enabled(true)
-                        .roles(List.of(adminRole))
+                        .roles(Set.of(adminRole))
                         .birthdate(null)
                         .firstName("Admin")
                         .lastName("Adminov")
