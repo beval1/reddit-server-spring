@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.beval.server.config.AppConstants.API_BASE;
+
 @RestController
-@RequestMapping(path = "/api/v1/auth")
+@RequestMapping(path = API_BASE)
 public class AuthController {
 
     private final AuthService userService;
@@ -22,7 +24,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/auth/signin")
     public ResponseEntity<ResponseDTO> signIn(@RequestBody SigninDTO signinDto) {
 
         String token = userService.signInUser(signinDto);
@@ -41,7 +43,7 @@ public class AuthController {
                 );
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<ResponseDTO> signUp(@RequestBody SignupDTO signupDto) {
         userService.signUpUser(signupDto);
 
