@@ -57,7 +57,7 @@ public class SubredditServiceImpl implements SubredditService {
 
         SubredditEntity subredditEntity = SubredditEntity
                 .builder()
-                .title(createSubredditDTO.getTitle())
+                .name(createSubredditDTO.getTitle())
                 .description(createSubredditDTO.getDescription())
                 .admins(List.of(userEntity))
                 .build();
@@ -71,7 +71,7 @@ public class SubredditServiceImpl implements SubredditService {
                 .orElseThrow(ResourceNotFoundException::new);
 
         if (createSubredditDTO.getDescription() != null){
-            subredditEntity.setTitle(createSubredditDTO.getTitle());
+            subredditEntity.setName(createSubredditDTO.getTitle());
         }
         if (createSubredditDTO.getTitle() != null){
             subredditEntity.setDescription(createSubredditDTO.getDescription());

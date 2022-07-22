@@ -16,10 +16,11 @@ import static com.beval.server.config.AppConstants.*;
 @Builder
 @Entity
 @Table(name = "subreddits")
-public class SubredditEntity extends BaseEntity{
+public class SubredditEntity extends BaseEntity {
     @NotNull
     @Length(max = MAXIMUM_TITLE_LENGTH, min = MINIMUM_TITLE_LENGTH)
-    private String title;
+    @Column(unique = true)
+    private String name;
 
     @NotNull
     @Length(max = MAXIMUM_SUBREDDIT_DESCRIPTION_LENGTH, min = MINIMUM_SUBREDDIT_DESCRIPTION_LENGTH)
