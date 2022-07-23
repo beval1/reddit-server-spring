@@ -40,10 +40,14 @@ public class UserEntity extends BaseEntity {
     private int commentKarma;
     private int awardeeKarma;
     private int awarderKarma;
-    private boolean enabled;
-    private boolean locked;
-    private boolean accountExpired;
-    private boolean credentialsExpired;
+    @Builder.Default
+    private boolean enabled = true;
+    @Builder.Default
+    private boolean locked = false;
+    @Builder.Default
+    private boolean accountExpired = false;
+    @Builder.Default
+    private boolean credentialsExpired = false;
 
 
     // when user is deleted, delete the corresponding roles in the mapping table

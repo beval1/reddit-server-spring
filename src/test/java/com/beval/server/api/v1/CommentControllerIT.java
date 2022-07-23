@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -43,22 +44,26 @@ class CommentControllerIT {
     private CommentRepository commentRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private PostEntity post1;
-    private PostEntity post2;
     private CommentEntity testCommentWithReplies;
     private CommentEntity comment2;
+    private final String usersPass = "1234";
 
     @BeforeEach
     public void setUp() {
         RoleEntity adminRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ADMIN).build());
         RoleEntity userRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.USER).build());
 
-         UserEntity testUser = userRepository.save(
+        String pass = passwordEncoder.encode(usersPass);
+
+        UserEntity testUser = userRepository.save(
                 UserEntity
                         .builder()
                         .username("test_user")
-                        .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                        .password(pass)
                         .enabled(true)
                         .roles(Set.of(userRole))
                         .birthdate(null)
@@ -72,7 +77,7 @@ class CommentControllerIT {
                 UserEntity
                         .builder()
                         .username("test_user2")
-                        .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                        .password(pass)
                         .enabled(true)
                         .roles(Set.of(userRole))
                         .birthdate(null)
@@ -86,7 +91,7 @@ class CommentControllerIT {
                 UserEntity
                         .builder()
                         .username("subreddit_admin")
-                        .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                        .password(pass)
                         .enabled(true)
                         .roles(Set.of(userRole))
                         .birthdate(null)
@@ -100,7 +105,7 @@ class CommentControllerIT {
                 UserEntity
                         .builder()
                         .username("application_admin")
-                        .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                        .password(pass)
                         .enabled(true)
                         .roles(Set.of(adminRole))
                         .birthdate(null)
@@ -128,7 +133,7 @@ class CommentControllerIT {
                         .build()
         );
 
-        post2 = postRepository.save(
+        PostEntity post2 = postRepository.save(
                 PostEntity
                         .builder()
                         .title("Second test post")
