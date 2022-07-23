@@ -76,7 +76,7 @@ public class CommentController {
         commentService.createComment(postId, createCommentDTO, userPrincipal);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(
                         ResponseDTO
                                 .builder()
@@ -85,16 +85,15 @@ public class CommentController {
                 );
     }
 
-    @PostMapping(value = "/comments/{postId}/comment/{commentId}")
+    @PostMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> createReply(
-            @PathVariable String postId,
             @PathVariable String commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody CreateCommentDTO createCommentDTO) {
-        commentService.createReply(postId, commentId, createCommentDTO, userPrincipal);
+        commentService.createReply(commentId, createCommentDTO, userPrincipal);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(
                         ResponseDTO
                                 .builder()
@@ -103,7 +102,7 @@ public class CommentController {
                 );
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)")
+    @PreAuthorize("@securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)")
     @PatchMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> updateCommentOrReply(
             @PathVariable String commentId,
@@ -122,7 +121,8 @@ public class CommentController {
                 );
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)" +
+            "OR @securityExpressionUtilityImpl.isSubredditAdminOfComment(#commentId, principal)")
     @DeleteMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> deleteCommentOrReply(
             @PathVariable String commentId,

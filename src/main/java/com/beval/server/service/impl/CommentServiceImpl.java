@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -135,11 +136,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void createReply(String commentId, String postId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
-        PostEntity postEntity = postRepository.findById(Long.parseLong(postId))
-                .orElseThrow(ResourceNotFoundException::new);
+    public void createReply(String commentId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
         CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Parent comment not found!"));
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
 
@@ -149,7 +148,7 @@ public class CommentServiceImpl implements CommentService {
                         .parentComment(commentEntity)
                         .content(createCommentDTO.getContent())
                         .author(userEntity)
-                        .post(postEntity)
+                        .post(commentEntity.getPost())
                         .build()
         );
     }

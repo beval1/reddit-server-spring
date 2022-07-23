@@ -48,7 +48,7 @@ public class UserEntity extends BaseEntity {
 
     // when user is deleted, delete the corresponding roles in the mapping table
     @NotNull
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="users_roles", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles;

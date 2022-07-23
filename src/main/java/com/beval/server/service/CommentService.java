@@ -12,7 +12,7 @@ public interface CommentService {
 
     void createComment(String postId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal);
 
-    void createReply(String postId, String commentId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal);
+    void createReply(String commentId, CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal);
 
     void updateCommentOrReply(String commentId, CreateCommentDTO createCommentDTO);
     void deleteCommentOrReply(String commentId);

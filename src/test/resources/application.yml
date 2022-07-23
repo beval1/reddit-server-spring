@@ -1,7 +1,7 @@
 app:
     jwtExpirationMs: 60000000
     jwtSecret: ${JWT_SECRET_KEY}
-    dataLoader: true
+    dataLoader: false
 cloudinary:
     apiKey: 548943318855874
     apiSecret: ${CLOUDINARY_API_SECRET}
