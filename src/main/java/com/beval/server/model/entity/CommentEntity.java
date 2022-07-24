@@ -12,6 +12,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import static com.beval.server.config.AppConstants.MAXIMUM_COMMENT_LENGTH;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +23,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "comments")
 public class CommentEntity extends UpvotableEntity {
     @NotNull
-    @Length(max = 255)
+    @Length(max = MAXIMUM_COMMENT_LENGTH)
     private String content;
 
     @OneToOne

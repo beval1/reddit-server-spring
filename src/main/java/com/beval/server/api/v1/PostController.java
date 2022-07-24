@@ -58,10 +58,10 @@ public class PostController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(value = "subredditId") String subredditId) {
 
-         postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId);
+        postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(
                         ResponseDTO
                                 .builder()
@@ -71,10 +71,10 @@ public class PostController {
                 );
     }
 
+    @DeleteMapping(value = "/posts/post/{postId}")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#postId, principal)" +
             "OR @securityExpressionUtilityImpl.isSubredditAdminOfPost(#postId, principal)")
-    @DeleteMapping(value = "/posts/post/{postId}")
-    public ResponseEntity<ResponseDTO> createPost(
+    public ResponseEntity<ResponseDTO> deletePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(value = "postId") String postId
     ) {
@@ -93,7 +93,7 @@ public class PostController {
     }
 
     @PostMapping(value = "/posts/post/{postId}/upvote")
-    public ResponseEntity<ResponseDTO> upvoteComment(
+    public ResponseEntity<ResponseDTO> upvotePost(
             @PathVariable String postId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
@@ -110,7 +110,7 @@ public class PostController {
     }
 
     @PostMapping(value = "/posts/post/{postId}/downvote")
-    public ResponseEntity<ResponseDTO> downVoteComment(
+    public ResponseEntity<ResponseDTO> downvotePost(
             @PathVariable String postId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
@@ -127,7 +127,7 @@ public class PostController {
     }
 
     @PostMapping(value = "/posts/post/{postId}/unvote")
-    public ResponseEntity<ResponseDTO> unvoteComment(
+    public ResponseEntity<ResponseDTO> unvotePost(
             @PathVariable String postId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {

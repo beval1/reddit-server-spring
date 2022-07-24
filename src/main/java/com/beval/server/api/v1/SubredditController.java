@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +50,7 @@ public class SubredditController {
         subredditService.createSubreddit(createSubredditDTO, principal);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(
                         ResponseDTO
                                 .builder()
@@ -59,7 +60,8 @@ public class SubredditController {
     }
 
     @PatchMapping("/subreddits/subreddit/{subredditId}")
-    public ResponseEntity<ResponseDTO> createSubreddit(
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isSubredditAdmin(#subredditId, principal)")
+    public ResponseEntity<ResponseDTO> updateSubreddit(
             @PathVariable String subredditId,
             @RequestBody CreateSubredditDTO createSubredditDTO,
             @AuthenticationPrincipal UserPrincipal principal

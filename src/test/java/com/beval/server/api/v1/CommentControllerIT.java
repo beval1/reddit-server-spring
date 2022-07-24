@@ -5,6 +5,7 @@ import com.beval.server.model.entity.*;
 import com.beval.server.model.enums.RoleEnum;
 import com.beval.server.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,14 +51,14 @@ class CommentControllerIT {
     private PostEntity post1;
     private CommentEntity testCommentWithReplies;
     private CommentEntity comment2;
-    private final String usersPass = "1234";
+    private CommentEntity comment_post2;
 
     @BeforeEach
     public void setUp() {
         RoleEntity adminRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ADMIN).build());
         RoleEntity userRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.USER).build());
 
-        String pass = passwordEncoder.encode(usersPass);
+        String pass = passwordEncoder.encode("1234");
 
         UserEntity testUser = userRepository.save(
                 UserEntity
@@ -133,15 +134,6 @@ class CommentControllerIT {
                         .build()
         );
 
-        PostEntity post2 = postRepository.save(
-                PostEntity
-                        .builder()
-                        .title("Second test post")
-                        .author(testUser)
-                        .subreddit(subreddit)
-                        .build()
-        );
-
         testCommentWithReplies = commentRepository.save(
                 CommentEntity
                         .builder()
@@ -151,6 +143,7 @@ class CommentControllerIT {
                         .parentComment(null)
                         .build()
         );
+
         comment2 = commentRepository.save(
                 CommentEntity
                         .builder()
@@ -188,6 +181,25 @@ class CommentControllerIT {
                         .parentComment(reply1)
                         .build()
         );
+
+        PostEntity post2 = postRepository.save(
+                PostEntity
+                        .builder()
+                        .title("Second test post")
+                        .author(testUser)
+                        .subreddit(subreddit)
+                        .build()
+        );
+
+        comment_post2 = comment2 = commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(post2)
+                        .content("Comment for post2")
+                        .author(testUser)
+                        .parentComment(null)
+                        .build()
+        );
     }
 
     @AfterEach
@@ -204,6 +216,18 @@ class CommentControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content.pageContent", hasSize(3)));
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void isCommentUpvotedByUser() throws Exception {
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + comment_post2.getId() + "/upvote"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get(API_BASE + "/comments/" + comment_post2.getPost().getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content.pageContent", hasSize(1)))
+                .andExpect(jsonPath("$.content.pageContent[0].upvotedByUser", Matchers.is(true)));
     }
 
     @Test
