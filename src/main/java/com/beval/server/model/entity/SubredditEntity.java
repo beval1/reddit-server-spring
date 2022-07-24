@@ -1,5 +1,6 @@
 package com.beval.server.model.entity;
 
+import com.beval.server.utils.validators.SubredditNameValidator;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -7,7 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static com.beval.server.config.AppConstants.*;
+import static com.beval.server.config.AppConstants.MAXIMUM_SUBREDDIT_DESCRIPTION_LENGTH;
+import static com.beval.server.config.AppConstants.MINIMUM_SUBREDDIT_DESCRIPTION_LENGTH;
 
 @Getter
 @Setter
@@ -17,9 +19,8 @@ import static com.beval.server.config.AppConstants.*;
 @Entity
 @Table(name = "subreddits")
 public class SubredditEntity extends BaseEntity {
-    @NotNull
-    @Length(max = MAXIMUM_TITLE_LENGTH, min = MINIMUM_TITLE_LENGTH)
     @Column(unique = true)
+    @SubredditNameValidator
     private String name;
 
     @NotNull

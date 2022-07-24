@@ -120,7 +120,7 @@ class CommentControllerIT {
                 SubredditEntity
                         .builder()
                         .admins(List.of(subredditAdmin))
-                        .name("Subreddit title test")
+                        .name("SubredditName")
                         .description("new subreddit description with enough characters")
                         .build()
         );

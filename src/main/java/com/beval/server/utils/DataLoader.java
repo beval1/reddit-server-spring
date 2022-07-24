@@ -70,7 +70,7 @@ public class DataLoader implements ApplicationRunner {
                 SubredditEntity
                         .builder()
                         .admins(List.of(user))
-                        .name("Reddit title")
+                        .name("SubredditTitle")
                         .description("tralalalallalallalallalallalalalalalallalalallalalal")
                         .build()
         );

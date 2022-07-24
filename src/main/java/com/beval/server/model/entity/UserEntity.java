@@ -1,16 +1,14 @@
 package com.beval.server.model.entity;
 
+import com.beval.server.utils.validators.EmailValidator;
+import com.beval.server.utils.validators.UserUsernameValidator;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-
-import static com.beval.server.config.AppConstants.MAXIMUM_USERNAME_LENGTH;
-import static com.beval.server.config.AppConstants.MINIMUM_USERNAME_LENGTH;
 
 @Getter
 @Setter
@@ -20,8 +18,7 @@ import static com.beval.server.config.AppConstants.MINIMUM_USERNAME_LENGTH;
 @Entity
 @Table(name="users")
 public class UserEntity extends BaseEntity {
-    @NotNull
-    @Length(max = MAXIMUM_USERNAME_LENGTH, min = MINIMUM_USERNAME_LENGTH)
+    @UserUsernameValidator
     private String username;
     @NotNull
     private String password;
@@ -29,7 +26,7 @@ public class UserEntity extends BaseEntity {
     private String firstName;
     @NotNull
     private String lastName;
-    @NotNull
+    @EmailValidator
     private String email;
     private LocalDate birthdate;
     @OneToOne
