@@ -70,17 +70,17 @@ class SubredditControllerIT {
                         .build()
         );
 
-        UserEntity subredditAdmin =  userRepository.save(
+        UserEntity SubredditModerator =  userRepository.save(
                 UserEntity
                         .builder()
-                        .username("subreddit_admin")
+                        .username("subreddit_moderator")
                         .password(pass)
                         .enabled(true)
                         .roles(Set.of(userRole))
                         .birthdate(null)
                         .firstName("Test")
                         .lastName("Test")
-                        .email("subreddit_admin@sub.com")
+                        .email("subreddit_moderator@sub.com")
                         .build()
         );
 
@@ -101,7 +101,7 @@ class SubredditControllerIT {
         this.subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .admins(List.of(subredditAdmin))
+                        .moderators(List.of(SubredditModerator))
                         .name("SubredditName")
                         .description("new subreddit description with enough characters")
                         .build()
@@ -155,8 +155,8 @@ class SubredditControllerIT {
     }
 
     @Test
-    @WithUserDetails(value = "subreddit_admin", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void updateSubreddit_WhenUserIsSubredditAdmin_WorksCorrectly() throws Exception {
+    @WithUserDetails(value = "subreddit_moderator", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void updateSubreddit_WhenUserIsSubredditModerator_WorksCorrectly() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
                 .title("NewSubredditName")
@@ -186,7 +186,7 @@ class SubredditControllerIT {
 
     @Test
     @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void updateSubreddit_WhenUserIsNotSubredditAdmin_IsForbidden() throws Exception {
+    void updateSubreddit_WhenUserIsNotSubredditModerator_IsForbidden() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
                 .title("new subreddit name")

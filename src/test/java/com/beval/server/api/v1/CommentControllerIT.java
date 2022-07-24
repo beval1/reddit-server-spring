@@ -88,17 +88,17 @@ class CommentControllerIT {
                         .build()
         );
 
-        UserEntity subredditAdmin =  userRepository.save(
+        UserEntity SubredditModerator =  userRepository.save(
                 UserEntity
                         .builder()
-                        .username("subreddit_admin")
+                        .username("subreddit_moderator")
                         .password(pass)
                         .enabled(true)
                         .roles(Set.of(userRole))
                         .birthdate(null)
                         .firstName("Test")
                         .lastName("Test")
-                        .email("subreddit_admin@sub.com")
+                        .email("subreddit_moderator@sub.com")
                         .build()
         );
 
@@ -119,7 +119,7 @@ class CommentControllerIT {
         SubredditEntity subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .admins(List.of(subredditAdmin))
+                        .moderators(List.of(SubredditModerator))
                         .name("SubredditName")
                         .description("new subreddit description with enough characters")
                         .build()
@@ -368,8 +368,8 @@ class CommentControllerIT {
     }
 
     @Test
-    @WithUserDetails(value = "subreddit_admin", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void deleteCommentOrReply_WhenSubredditAdmin_WorksCorrectly() throws Exception {
+    @WithUserDetails(value = "subreddit_moderator", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void deleteCommentOrReply_WhenSubredditModerator_WorksCorrectly() throws Exception {
         mockMvc.perform(delete(API_BASE + "/comments/comment/" + testCommentWithReplies.getId()))
                 .andExpect(status().isOk());
     }

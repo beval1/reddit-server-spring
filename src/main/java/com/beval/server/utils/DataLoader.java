@@ -69,7 +69,7 @@ public class DataLoader implements ApplicationRunner {
         SubredditEntity subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .admins(List.of(user))
+                        .moderators(List.of(user))
                         .name("SubredditTitle")
                         .description("tralalalallalallalallalallalalalalalallalalallalalal")
                         .build()

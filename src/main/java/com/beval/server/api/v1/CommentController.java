@@ -122,7 +122,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)" +
-            "OR @securityExpressionUtilityImpl.isSubredditAdminOfComment(#commentId, principal)")
+            "OR @securityExpressionUtilityImpl.isSubredditModeratorOfComment(#commentId, principal)")
     @DeleteMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> deleteCommentOrReply(
             @PathVariable String commentId,

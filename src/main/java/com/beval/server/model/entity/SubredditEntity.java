@@ -29,9 +29,9 @@ public class SubredditEntity extends BaseEntity {
 
     @NotNull
     @ManyToMany
-    @JoinTable(name = "subbreddits_admins",
+    @JoinTable(name = "subbreddits_moderators",
             joinColumns = @JoinColumn(name = "subbredit_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<UserEntity> admins;
+    private List<UserEntity> moderators;
 
 }

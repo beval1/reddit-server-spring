@@ -73,7 +73,7 @@ public class PostController {
 
     @DeleteMapping(value = "/posts/post/{postId}")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#postId, principal)" +
-            "OR @securityExpressionUtilityImpl.isSubredditAdminOfPost(#postId, principal)")
+            "OR @securityExpressionUtilityImpl.isSubredditModeratorOfPost(#postId, principal)")
     public ResponseEntity<ResponseDTO> deletePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(value = "postId") String postId

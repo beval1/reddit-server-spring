@@ -59,7 +59,7 @@ public class SubredditServiceImpl implements SubredditService {
                 .builder()
                 .name(createSubredditDTO.getTitle())
                 .description(createSubredditDTO.getDescription())
-                .admins(List.of(userEntity))
+                .moderators(List.of(userEntity))
                 .build();
         subredditRepository.save(subredditEntity);
     }

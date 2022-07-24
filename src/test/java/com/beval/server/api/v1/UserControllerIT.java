@@ -84,17 +84,17 @@ class UserControllerIT {
                         .build()
         );
 
-        UserEntity subredditAdmin =  userRepository.save(
+        UserEntity SubredditModerator =  userRepository.save(
                 UserEntity
                         .builder()
-                        .username("subreddit_admin")
+                        .username("subreddit_moderator")
                         .password(pass)
                         .enabled(true)
                         .roles(Set.of(userRole))
                         .birthdate(null)
                         .firstName("Test")
                         .lastName("Test")
-                        .email("subreddit_admin@sub.com")
+                        .email("subreddit_moderator@sub.com")
                         .build()
         );
 

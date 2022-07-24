@@ -44,37 +44,37 @@ public class SecurityExpressionUtilityImpl implements SecurityExpressionUtility 
 
     @Override
     @Transactional
-    public boolean isSubredditAdminOfComment(Long resourceId, UserPrincipal userPrincipal) {
+    public boolean isSubredditModeratorOfComment(Long resourceId, UserPrincipal userPrincipal) {
         UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
                 .orElseThrow(NotAuthorizedException::new);
         CommentEntity commentEntity = commentRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
 
-        return commentEntity.getPost().getSubreddit().getAdmins()
+        return commentEntity.getPost().getSubreddit().getModerators()
                 .stream()
-                .anyMatch(admin -> admin.getUsername().equals(loggedUser.getUsername()));
+                .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
     }
 
     @Override
     @Transactional
-    public boolean isSubredditAdminOfPost(Long resourceId, UserPrincipal userPrincipal) {
+    public boolean isSubredditModeratorOfPost(Long resourceId, UserPrincipal userPrincipal) {
         UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
                 .orElseThrow(NotAuthorizedException::new);
         PostEntity postEntity = postRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
 
-        return postEntity.getSubreddit().getAdmins()
+        return postEntity.getSubreddit().getModerators()
                 .stream()
-                .anyMatch(admin -> admin.getUsername().equals(loggedUser.getUsername()));
+                .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
     }
 
     @Override
     @Transactional
-    public boolean isSubredditAdmin(Long subredditId, UserPrincipal userPrincipal) {
+    public boolean isSubredditModerator(Long subredditId, UserPrincipal userPrincipal) {
         UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
                 .orElseThrow(NotAuthorizedException::new);
         SubredditEntity subredditEntity = subredditRepository.findById(subredditId).orElseThrow(ResourceNotFoundException::new);
 
-        return subredditEntity.getAdmins()
+        return subredditEntity.getModerators()
                 .stream()
-                .anyMatch(admin -> admin.getUsername().equals(loggedUser.getUsername()));
+                .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
     }
 }
