@@ -1,6 +1,7 @@
 package com.beval.server.api.v1;
 
 import com.beval.server.dto.payload.ImageUploadPayloadDTO;
+import com.beval.server.dto.payload.UpdateUserProfileDTO;
 import com.beval.server.dto.response.MyProfileDTO;
 import com.beval.server.dto.response.ResponseDTO;
 import com.beval.server.dto.response.UserProfileDTO;
@@ -35,6 +36,23 @@ public class UserController {
                         ResponseDTO
                                 .builder()
                                 .content(myProfileDTO)
+                                .build()
+
+                );
+    }
+
+    @PatchMapping(value = "/users/my-profile")
+    public ResponseEntity<ResponseDTO> updateMyProfile(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                       @RequestBody UpdateUserProfileDTO updateUserProfileDTO) {
+        userService.updateMyProfile(userPrincipal, updateUserProfileDTO);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Profile updated successfully!")
+                                .content(null)
                                 .build()
 
                 );

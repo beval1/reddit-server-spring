@@ -1,6 +1,7 @@
 package com.beval.server.service;
 
 import com.beval.server.dto.payload.ImageUploadPayloadDTO;
+import com.beval.server.dto.payload.UpdateUserProfileDTO;
 import com.beval.server.dto.response.MyProfileDTO;
 import com.beval.server.dto.response.UserProfileDTO;
 import com.beval.server.security.UserPrincipal;
@@ -15,4 +16,6 @@ public interface UserService {
 
     void deleteBannerImage(UserPrincipal userPrincipal);
     void deleteProfileImage(UserPrincipal userPrincipal);
+
+    void updateMyProfile(UserPrincipal userPrincipal, UpdateUserProfileDTO updateUserProfileDTO);
 }

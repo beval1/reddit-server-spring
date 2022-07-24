@@ -1,6 +1,8 @@
 package com.beval.server.api.v1;
 
 import com.beval.server.dto.payload.ImageUploadPayloadDTO;
+import com.beval.server.dto.payload.UpdateUserProfileDTO;
+import com.beval.server.dto.response.MyProfileDTO;
 import com.beval.server.model.entity.ImageEntity;
 import com.beval.server.model.entity.RoleEntity;
 import com.beval.server.model.entity.UserEntity;
@@ -10,6 +12,7 @@ import com.beval.server.repository.RoleRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.service.CloudinaryService;
 import com.beval.server.service.impl.CloudinaryServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +31,8 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.beval.server.config.AppConstants.API_BASE;
@@ -50,6 +55,9 @@ class UserControllerIT {
     private ImageRepository imageRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockBean
     private CloudinaryService cloudinaryService;
 
@@ -118,6 +126,39 @@ class UserControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content.username", Matchers.is(testUser.getUsername())));
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void updateMyProfile_WhenLoggedIn_WorksCorrectly() throws Exception {
+        UpdateUserProfileDTO updateUserProfileDTO= UpdateUserProfileDTO
+                .builder()
+                .birthdate(LocalDate.now())
+                .firstName("Updated firstname")
+                .lastName("Updated lastname")
+                .username("new_username")
+                .build();
+
+        mockMvc.perform(patch(API_BASE + "/users/my-profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateUserProfileDTO)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void updateMyProfile_WhenAnonymous_IsUnauthorized() throws Exception {
+        UpdateUserProfileDTO updateUserProfileDTO= UpdateUserProfileDTO
+                .builder()
+                .birthdate(LocalDate.now())
+                .firstName("Updated firstname")
+                .lastName("Updated lastname")
+                .username("new_username")
+                .build();
+        mockMvc.perform(patch(API_BASE + "/users/my-profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateUserProfileDTO)))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

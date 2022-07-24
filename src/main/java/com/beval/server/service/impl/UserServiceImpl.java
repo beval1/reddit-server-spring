@@ -1,6 +1,7 @@
 package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.ImageUploadPayloadDTO;
+import com.beval.server.dto.payload.UpdateUserProfileDTO;
 import com.beval.server.dto.response.MyProfileDTO;
 import com.beval.server.dto.response.UserProfileDTO;
 import com.beval.server.exception.NotAuthorizedException;
@@ -102,6 +103,17 @@ public class UserServiceImpl implements UserService {
         userEntity.setProfileImage(null);
         //delete image in cloudinary and the database
         cloudinaryService.delete(profileImage);
+    }
+
+    @Override
+    public void updateMyProfile(UserPrincipal userPrincipal, UpdateUserProfileDTO updateUserProfileDTO) {
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        userEntity.setUsername(updateUserProfileDTO.getUsername());
+        userEntity.setBirthdate(updateUserProfileDTO.getBirthdate());
+        userEntity.setFirstName(updateUserProfileDTO.getFirstName());
+        userEntity.setLastName(updateUserProfileDTO.getLastName());
     }
 
     @Override
