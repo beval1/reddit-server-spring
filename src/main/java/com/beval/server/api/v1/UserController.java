@@ -25,7 +25,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/users/myprofile")
+    @GetMapping(value = "/users/my-profile")
     public ResponseEntity<ResponseDTO> getMyProfile(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         MyProfileDTO myProfileDTO = userService.getMyProfile(userPrincipal);
 

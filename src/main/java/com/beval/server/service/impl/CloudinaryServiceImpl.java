@@ -75,16 +75,18 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     @Override
     public boolean delete(ImageEntity imageEntity) {
-        try {
-            //delete in cloudinary
-            this.cloudinary.uploader().destroy(imageEntity.getPublicId(), Map.of());
-            //delete ind database
-            imageRepository.deleteById(imageEntity.getId());
-        } catch (IOException e) {
-            throw new CloudinaryException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    String.format("Cloudinary error: %s", e.getMessage()));
+        if (imageEntity != null) {
+            try {
+                //delete in cloudinary
+                this.cloudinary.uploader().destroy(imageEntity.getPublicId(), Map.of());
+                //delete ind database
+                imageRepository.deleteById(imageEntity.getId());
+            } catch (IOException e) {
+                throw new CloudinaryException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        String.format("Cloudinary error: %s", e.getMessage()));
+            }
         }
-        return true;
+        return false;
     }
 
     private void cleanUp(Path path) {
