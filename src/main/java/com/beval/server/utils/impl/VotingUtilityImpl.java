@@ -91,7 +91,7 @@ public class VotingUtilityImpl implements VotingUtility {
         if (action.equals("upvote")){
             if (upvotableEntity instanceof CommentEntity) {
                 upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma() +
-                        (1*POST_KARMA_UPVOTE_MULTIPLIER));
+                        (1*COMMENT_KARMA_UPVOTE_MULTIPLIER));
             } else if (upvotableEntity instanceof PostEntity){
                 upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma() +
                         (1*POST_KARMA_UPVOTE_MULTIPLIER));
@@ -102,7 +102,7 @@ public class VotingUtilityImpl implements VotingUtility {
                         (1*COMMENT_KARMA_DOWNVOTE_MULTIPLIER));
             } else if (upvotableEntity instanceof PostEntity){
                 upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma() -
-                        (1*COMMENT_KARMA_DOWNVOTE_MULTIPLIER));
+                        (1*POST_KARMA_DOWNVOTE_MULTIPLIER));
             }
         }
     }
