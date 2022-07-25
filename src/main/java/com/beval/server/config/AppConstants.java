@@ -25,6 +25,12 @@ public final class AppConstants {
     public static final int PAGEABLE_DEFAULT_PAGE_NUMBER = 0;
     public  static final int PAGEABLE_DEFAULT_PAGE_SIZE = 20;
 
+    public  static final double POST_KARMA_UPVOTE_MULTIPLIER = 0.6;
+    public  static final double POST_KARMA_DOWNVOTE_MULTIPLIER = 1;
+    public  static final double COMMENT_KARMA_UPVOTE_MULTIPLIER = 0.8;
+    public  static final double COMMENT_KARMA_DOWNVOTE_MULTIPLIER = 1;
+
+
 //    public static final String DEFAULT_USER_PROFILE_IMAGE_URL = "";
 //    public static final String DEFAULT_USER_BANNER_IMAGE_URL = "";
 

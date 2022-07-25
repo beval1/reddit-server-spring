@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+import static com.beval.server.config.AppConstants.*;
+
 @Component
 public class VotingUtilityImpl implements VotingUtility {
     private final UserRepository userRepository;
@@ -88,15 +90,19 @@ public class VotingUtilityImpl implements VotingUtility {
     private void setKarma(UpvotableEntity upvotableEntity, String action){
         if (action.equals("upvote")){
             if (upvotableEntity instanceof CommentEntity) {
-                upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma()+1);
+                upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma() +
+                        (1*POST_KARMA_UPVOTE_MULTIPLIER));
             } else if (upvotableEntity instanceof PostEntity){
-                upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma()+1);
+                upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma() +
+                        (1*POST_KARMA_UPVOTE_MULTIPLIER));
             }
         } else {
             if (upvotableEntity instanceof CommentEntity) {
-                upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma()-1);
+                upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma() -
+                        (1*COMMENT_KARMA_DOWNVOTE_MULTIPLIER));
             } else if (upvotableEntity instanceof PostEntity){
-                upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma()-1);
+                upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma() -
+                        (1*COMMENT_KARMA_DOWNVOTE_MULTIPLIER));
             }
         }
     }

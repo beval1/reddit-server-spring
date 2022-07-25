@@ -33,10 +33,10 @@ public class UserEntity extends BaseEntity {
     private ImageEntity profileImage;
     @OneToOne
     private ImageEntity bannerImage;
-    private int postKarma;
-    private int commentKarma;
-    private int awardeeKarma;
-    private int awarderKarma;
+    private double postKarma;
+    private double commentKarma;
+    private double awardeeKarma;
+    private double awarderKarma;
     @Builder.Default
     private boolean enabled = true;
     @Builder.Default
