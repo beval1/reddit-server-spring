@@ -2,9 +2,7 @@ package com.beval.server.utils.impl;
 
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
-import com.beval.server.model.entity.SubredditEntity;
-import com.beval.server.model.entity.UpvotableEntity;
-import com.beval.server.model.entity.UserEntity;
+import com.beval.server.model.entity.*;
 import com.beval.server.repository.*;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.utils.SecurityExpressionUtility;
@@ -42,12 +40,24 @@ public class SecurityExpressionUtilityImpl implements SecurityExpressionUtility 
 
     @Override
     @Transactional
-    public boolean isSubredditModeratorOfResource(Long resourceId, UserPrincipal userPrincipal) {
+    public boolean isSubredditModeratorOfComment(Long commentId, UserPrincipal userPrincipal) {
         UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
                 .orElseThrow(NotAuthorizedException::new);
-        UpvotableEntity upvotableEntity = upvotableRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
+        CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(ResourceNotFoundException::new);
 
-        return upvotableEntity.getSubreddit().getModerators()
+        return commentEntity.getPost().getSubreddit().getModerators()
+                .stream()
+                .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
+    }
+
+    @Override
+    @Transactional
+    public boolean isSubredditModeratorOfPost(Long postId, UserPrincipal userPrincipal) {
+        UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
+                .orElseThrow(NotAuthorizedException::new);
+        PostEntity postEntity = postRepository.findById(postId).orElseThrow(ResourceNotFoundException::new);
+
+        return postEntity.getSubreddit().getModerators()
                 .stream()
                 .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
     }

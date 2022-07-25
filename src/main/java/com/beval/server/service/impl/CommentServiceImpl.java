@@ -139,7 +139,6 @@ public class CommentServiceImpl implements CommentService {
                         .content(createCommentDTO.getContent())
                         .author(userEntity)
                         .post(postEntity)
-                        .subreddit(subreddit)
                         .build()
         );
     }
@@ -167,7 +166,6 @@ public class CommentServiceImpl implements CommentService {
                         .content(createCommentDTO.getContent())
                         .author(userEntity)
                         .post(commentEntity.getPost())
-                        .subreddit(commentEntity.getPost().getSubreddit())
                         .build()
         );
     }
@@ -177,7 +175,7 @@ public class CommentServiceImpl implements CommentService {
     public void updateCommentOrReply(Long commentId, @NotNull CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal) {
         CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(ResourceNotFoundException::new);
-        SubredditEntity subreddit = commentEntity.getSubreddit();
+        SubredditEntity subreddit = commentEntity.getPost().getSubreddit();
 
         if(securityExpressionUtility.isUserBannedFromSubreddit(subreddit.getId(), userPrincipal)){
             throw new UserBannedException();

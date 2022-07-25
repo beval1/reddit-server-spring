@@ -115,7 +115,6 @@ public class PostServiceImpl implements PostService {
                         .content(createPostDTO.getOriginalComment().getContent())
                         .author(userEntity)
                         .parentComment(null)
-                        .subreddit(postEntity.getSubreddit())
                         .build()
         );
     }

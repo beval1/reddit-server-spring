@@ -37,7 +37,16 @@ public class VotingUtilityImpl implements VotingUtility {
         UpvotableEntity upvotableEntity = upvotableRepository.findById(entityId)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        SubredditEntity subredditEntity = upvotableEntity.getSubreddit();
+        SubredditEntity subredditEntity = null;
+        if (upvotableEntity instanceof CommentEntity commentEntity) {
+            subredditEntity = ((CommentEntity) upvotableEntity).getPost().getSubreddit();
+        } else if (upvotableEntity instanceof PostEntity postEntity){
+            subredditEntity = ((PostEntity) upvotableEntity).getSubreddit();
+        } else {
+            //developer mistake
+            throw new IllegalArgumentException();
+        }
+
 
         //archived posts and comments shouldn't be upvoted
         if (upvotableEntity.isArchived()) {
@@ -54,22 +63,14 @@ public class VotingUtilityImpl implements VotingUtility {
                     upvotableEntity.getDownvotedUsers().remove(userEntity);
                 }
                 upvotableEntity.getUpvotedUsers().add(userEntity);
-                if (upvotableEntity instanceof CommentEntity) {
-                    upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma()+1);
-                } else if (upvotableEntity instanceof PostEntity){
-                    upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma()+1);
-                }
+                setKarma(upvotableEntity, action);
             }
             case "downvote" -> {
                 if (upvotableEntity.getUpvotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))) {
                     upvotableEntity.getUpvotedUsers().remove(userEntity);
                 }
                 upvotableEntity.getDownvotedUsers().add(userEntity);
-                if (upvotableEntity instanceof CommentEntity) {
-                    upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma()-1);
-                } else if (upvotableEntity instanceof PostEntity){
-                    upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma()-1);
-                }
+                setKarma(upvotableEntity, action);
             }
             case "unvote" -> {
                 if (upvotableEntity.getDownvotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))) {
@@ -81,6 +82,22 @@ public class VotingUtilityImpl implements VotingUtility {
             }
             //that would be developer mistake
             default -> throw new IllegalArgumentException();
+        }
+    }
+
+    private void setKarma(UpvotableEntity upvotableEntity, String action){
+        if (action.equals("upvote")){
+            if (upvotableEntity instanceof CommentEntity) {
+                upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma()+1);
+            } else if (upvotableEntity instanceof PostEntity){
+                upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma()+1);
+            }
+        } else {
+            if (upvotableEntity instanceof CommentEntity) {
+                upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma()-1);
+            } else if (upvotableEntity instanceof PostEntity){
+                upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma()-1);
+            }
         }
     }
 
