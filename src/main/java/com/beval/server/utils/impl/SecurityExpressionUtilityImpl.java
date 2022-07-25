@@ -2,11 +2,9 @@ package com.beval.server.utils.impl;
 
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
-import com.beval.server.model.entity.CommentEntity;
-import com.beval.server.model.entity.PostEntity;
 import com.beval.server.model.entity.SubredditEntity;
+import com.beval.server.model.entity.UpvotableEntity;
 import com.beval.server.model.entity.UserEntity;
-import com.beval.server.model.interfaces.Upvotable;
 import com.beval.server.repository.*;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.utils.SecurityExpressionUtility;
@@ -37,31 +35,19 @@ public class SecurityExpressionUtilityImpl implements SecurityExpressionUtility 
     public boolean isResourceOwner(Long resourceId, UserPrincipal userPrincipal) {
         UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
                 .orElseThrow(NotAuthorizedException::new);
-        Upvotable upvotable = upvotableRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
+        UpvotableEntity upvotable = upvotableRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
 
         return upvotable.getAuthor().getId().equals(loggedUser.getId());
     }
 
     @Override
     @Transactional
-    public boolean isSubredditModeratorOfComment(Long resourceId, UserPrincipal userPrincipal) {
+    public boolean isSubredditModeratorOfResource(Long resourceId, UserPrincipal userPrincipal) {
         UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
                 .orElseThrow(NotAuthorizedException::new);
-        CommentEntity commentEntity = commentRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
+        UpvotableEntity upvotableEntity = upvotableRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
 
-        return commentEntity.getPost().getSubreddit().getModerators()
-                .stream()
-                .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
-    }
-
-    @Override
-    @Transactional
-    public boolean isSubredditModeratorOfPost(Long resourceId, UserPrincipal userPrincipal) {
-        UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
-                .orElseThrow(NotAuthorizedException::new);
-        PostEntity postEntity = postRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
-
-        return postEntity.getSubreddit().getModerators()
+        return upvotableEntity.getSubreddit().getModerators()
                 .stream()
                 .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
     }
@@ -77,4 +63,22 @@ public class SecurityExpressionUtilityImpl implements SecurityExpressionUtility 
                 .stream()
                 .anyMatch(moderator -> moderator.getUsername().equals(loggedUser.getUsername()));
     }
+
+    @Override
+    @Transactional
+    public boolean isUserBannedFromSubreddit(Long subredditId, UserPrincipal userPrincipal) {
+        UserEntity loggedUser = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(), userPrincipal.getUsername())
+                .orElseThrow(NotAuthorizedException::new);
+        SubredditEntity subreddit = subredditRepository.findById(subredditId).orElseThrow(ResourceNotFoundException::new);
+
+        return subreddit.getBannedUsers().stream().anyMatch(bannedUser ->
+                bannedUser.getUsername().equals(loggedUser.getUsername()));
+    }
+
+    @Override
+    public boolean isResourceArchived(Long resourceId) {
+        UpvotableEntity upvotable = upvotableRepository.findById(resourceId).orElseThrow(ResourceNotFoundException::new);
+        return upvotable.isArchived();
+    }
+
 }

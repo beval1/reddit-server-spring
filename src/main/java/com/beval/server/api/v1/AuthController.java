@@ -18,16 +18,16 @@ import static com.beval.server.config.AppConstants.API_BASE;
 @RequestMapping(path = API_BASE)
 public class AuthController {
 
-    private final AuthService userService;
+    private final AuthService authService;
 
     public AuthController(AuthService userService) {
-        this.userService = userService;
+        this.authService = userService;
     }
 
     @PostMapping("/auth/signin")
     public ResponseEntity<ResponseDTO> signIn(@RequestBody SigninDTO signinDto) {
 
-        String token = userService.signInUser(signinDto);
+        String token = authService.signInUser(signinDto);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -45,7 +45,7 @@ public class AuthController {
 
     @PostMapping("/auth/signup")
     public ResponseEntity<ResponseDTO> signUp(@RequestBody SignupDTO signupDto) {
-        userService.signUpUser(signupDto);
+        authService.signUpUser(signupDto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

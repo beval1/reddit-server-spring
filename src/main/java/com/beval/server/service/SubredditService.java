@@ -9,5 +9,5 @@ import org.springframework.data.domain.Pageable;
 public interface SubredditService {
     PageableDTO<SubredditDTO> getAllSubreddits(Pageable pageable);
     void createSubreddit(CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
-    void updateSubreddit(String subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
+    void updateSubreddit(Long subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
 }

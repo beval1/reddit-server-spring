@@ -8,7 +8,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -27,8 +26,8 @@ public class PostEntity extends UpvotableEntity {
     @Length(max = MAXIMUM_TITLE_LENGTH, min = MINIMUM_TITLE_LENGTH)
     private String title;
 
-    @NotNull
-    @ManyToOne
-    private SubredditEntity subreddit;
+//    @NotNull
+//    @ManyToOne
+//    private SubredditEntity subreddit;
 
 }

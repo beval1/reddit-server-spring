@@ -7,14 +7,14 @@ import com.beval.server.security.UserPrincipal;
 import org.springframework.data.domain.Pageable;
 
 public interface PostService {
-    PageableDTO<PostDTO> getAllPostsForSubreddit(String subredditId, UserPrincipal userPrincipal, Pageable pageable);
+    PageableDTO<PostDTO> getAllPostsForSubreddit(Long subredditId, UserPrincipal userPrincipal, Pageable pageable);
 
-    void createPostForSubreddit(CreatePostDTO createPostDTO, UserPrincipal principal, String subredditId);
-    void deletePost(String postId);
+    void createPostForSubreddit(CreatePostDTO createPostDTO, UserPrincipal principal, Long subredditId);
+    void deletePost(Long postId);
 
-    void upvotePost(String postId, UserPrincipal userPrincipal);
+    void upvotePost(Long postId, UserPrincipal userPrincipal);
 
-    void downvotePost(String postId, UserPrincipal userPrincipal);
+    void downvotePost(Long postId, UserPrincipal userPrincipal);
 
-    void unvotePost(String postId, UserPrincipal userPrincipal);
+    void unvotePost(Long postId, UserPrincipal userPrincipal);
 }

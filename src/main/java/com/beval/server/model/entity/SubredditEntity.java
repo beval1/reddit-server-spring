@@ -34,4 +34,10 @@ public class SubredditEntity extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<UserEntity> moderators;
 
+    @ManyToMany
+    @JoinTable(name = "subbreddits_bans",
+            joinColumns = @JoinColumn(name = "subbredit_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<UserEntity> bannedUsers;
+
 }

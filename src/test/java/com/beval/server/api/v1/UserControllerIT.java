@@ -5,10 +5,12 @@ import com.beval.server.dto.payload.UpdateUserProfileDTO;
 import com.beval.server.dto.response.MyProfileDTO;
 import com.beval.server.model.entity.ImageEntity;
 import com.beval.server.model.entity.RoleEntity;
+import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.model.enums.RoleEnum;
 import com.beval.server.repository.ImageRepository;
 import com.beval.server.repository.RoleRepository;
+import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.service.CloudinaryService;
 import com.beval.server.service.impl.CloudinaryServiceImpl;
@@ -33,6 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static com.beval.server.config.AppConstants.API_BASE;
@@ -57,11 +60,14 @@ class UserControllerIT {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private SubredditRepository subredditRepository;
 
     @MockBean
     private CloudinaryService cloudinaryService;
 
     private UserEntity testUser;
+    private SubredditEntity subreddit;
 
     @BeforeEach
     void setUp() {
@@ -111,10 +117,20 @@ class UserControllerIT {
                         .email("admin@admin.com")
                         .build()
         );
+
+        this.subreddit = subredditRepository.save(
+                SubredditEntity
+                        .builder()
+                        .moderators(List.of(SubredditModerator))
+                        .name("SubredditName")
+                        .description("new subreddit description with enough characters")
+                        .build()
+        );
     }
 
     @AfterEach
     void tearDown() {
+        subredditRepository.deleteAll();
         imageRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -237,4 +253,47 @@ class UserControllerIT {
         mockMvc.perform(delete(API_BASE + "/users/banner-image"))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    @WithUserDetails(value = "subreddit_moderator", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void banUserFromSubreddit_WhenSubredditModerator_WorksCorrectly() throws Exception {
+        mockMvc.perform(post(API_BASE + "/users/user/" + testUser.getId() + "/ban/" + subreddit.getId()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void banUserFromSubreddit_WhenNotSubredditModerator_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/users/user/" + testUser.getId() + "/ban/" + subreddit.getId()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void banUserFromSubreddit_WhenNotSubredditModerator_IsUnauthorized() throws Exception {
+        mockMvc.perform(post(API_BASE + "/users/user/" + testUser.getId() + "/ban/" + subreddit.getId()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(value = "application_admin", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void banUserFromApp_WhenAppAdmin_WorksCorrectly() throws Exception {
+        mockMvc.perform(post(API_BASE + "/users/user/" + testUser.getId() + "/ban/"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithUserDetails(value = "subreddit_moderator", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void banUserFromApp_WhenNotAppAdmin_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/users/user/" + testUser.getId() + "/ban/"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void banUserFromApp_WhenAnonymous_IsUnauthorized() throws Exception {
+        mockMvc.perform(post(API_BASE + "/users/user/" + testUser.getId() + "/ban/"))
+                .andExpect(status().isUnauthorized());
+    }
+
 }

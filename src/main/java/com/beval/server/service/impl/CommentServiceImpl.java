@@ -6,14 +6,17 @@ import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceArchivedException;
 import com.beval.server.exception.ResourceNotFoundException;
+import com.beval.server.exception.UserBannedException;
 import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
+import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.repository.CommentRepository;
 import com.beval.server.repository.PostRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CommentService;
+import com.beval.server.utils.SecurityExpressionUtility;
 import com.beval.server.utils.VotingUtility;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
@@ -34,33 +37,35 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final VotingUtility votingUtility;
+    private final SecurityExpressionUtility securityExpressionUtility;
 
     public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository,
                               UserRepository userRepository, ModelMapper modelMapper,
-                              VotingUtility votingUtility) {
+                              VotingUtility votingUtility, SecurityExpressionUtility securityExpressionUtility) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.votingUtility = votingUtility;
+        this.securityExpressionUtility = securityExpressionUtility;
     }
 
     @Override
     @Transactional
-    public PageableDTO<CommentDTO> getAllCommentsForPostAndParentComment(String postId, String commentId,
+    public PageableDTO<CommentDTO> getAllCommentsForPostAndParentComment(Long postId, Long commentId,
                                                                          UserPrincipal userPrincipal, Pageable pageable) {
 
 //        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
 //                : Sort.by(sortBy).descending();
 //        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        PostEntity post = postRepository.findById(Long.parseLong(postId))
+        PostEntity post = postRepository.findById(postId)
                 .orElseThrow(ResourceNotFoundException::new);
 
         CommentEntity parentComment = null;
         //if it's not comment but reply
         if (commentId != null) {
-            parentComment = commentRepository.findById(Long.parseLong(commentId))
+            parentComment = commentRepository.findById(commentId)
                     .orElseThrow(ResourceNotFoundException::new);
         }
         UserEntity userEntity = null;
@@ -113,14 +118,17 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void createComment(String postId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
-        PostEntity postEntity = postRepository.findById(Long.parseLong(postId))
+    public void createComment(Long postId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
+        PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(ResourceNotFoundException::new);
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+        SubredditEntity subreddit = postEntity.getSubreddit();
 
-        //don't allow any comments on archived posts
-        if (postEntity.isArchived()) {
+        if(securityExpressionUtility.isUserBannedFromSubreddit(subreddit.getId(), userPrincipal)){
+            throw new UserBannedException();
+        }
+        if (securityExpressionUtility.isResourceArchived(postEntity.getId())){
             throw new ResourceArchivedException();
         }
 
@@ -131,16 +139,26 @@ public class CommentServiceImpl implements CommentService {
                         .content(createCommentDTO.getContent())
                         .author(userEntity)
                         .post(postEntity)
+                        .subreddit(subreddit)
                         .build()
         );
     }
 
     @Override
-    public void createReply(String commentId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
-        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
+    public void createReply(Long commentId, @NotNull CreateCommentDTO createCommentDTO, @NotNull UserPrincipal userPrincipal) {
+        CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Parent comment not found!"));
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        SubredditEntity subreddit = commentEntity.getPost().getSubreddit();
+
+        if(securityExpressionUtility.isUserBannedFromSubreddit(subreddit.getId(), userPrincipal)){
+            throw new UserBannedException();
+        }
+        if (securityExpressionUtility.isResourceArchived(commentEntity.getId())){
+            throw new ResourceArchivedException();
+        }
 
         commentRepository.save(
                 CommentEntity
@@ -149,18 +167,22 @@ public class CommentServiceImpl implements CommentService {
                         .content(createCommentDTO.getContent())
                         .author(userEntity)
                         .post(commentEntity.getPost())
+                        .subreddit(commentEntity.getPost().getSubreddit())
                         .build()
         );
     }
 
     @Override
     @Transactional
-    public void updateCommentOrReply(String commentId, @NotNull CreateCommentDTO createCommentDTO) {
-        CommentEntity commentEntity = commentRepository.findById(Long.parseLong(commentId))
+    public void updateCommentOrReply(Long commentId, @NotNull CreateCommentDTO createCommentDTO, UserPrincipal userPrincipal) {
+        CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(ResourceNotFoundException::new);
+        SubredditEntity subreddit = commentEntity.getSubreddit();
 
-        //Don't allow update if comment is archived
-        if (commentEntity.isArchived()) {
+        if(securityExpressionUtility.isUserBannedFromSubreddit(subreddit.getId(), userPrincipal)){
+            throw new UserBannedException();
+        }
+        if (securityExpressionUtility.isResourceArchived(commentEntity.getId())){
             throw new ResourceArchivedException();
         }
 
@@ -169,37 +191,35 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void deleteCommentOrReply(String commentId) {
-        Long commentIdLong = Long.parseLong(commentId);
-        CommentEntity commentEntity = commentRepository.findById(commentIdLong)
+    public void deleteCommentOrReply(Long commentId) {
+        CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(ResourceNotFoundException::new);
 
         //first check if there are any replies to the comment
         if (commentRepository.existsByParentComment(commentEntity)) {
             commentEntity.setContent("[deleted]");
         } else {
-            commentRepository.deleteById(commentIdLong);
+            commentRepository.deleteById(commentId);
         }
 
     }
 
     @Override
     @Transactional
-    public void upvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
+    public void upvoteComment(Long commentId, @NotNull UserPrincipal userPrincipal) {
         votingUtility.vote(commentId, userPrincipal, "upvote");
     }
 
     @Override
     @Transactional
-    public void downvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
+    public void downvoteComment(Long commentId, @NotNull UserPrincipal userPrincipal) {
         votingUtility.vote(commentId, userPrincipal, "downvote");
     }
 
     @Override
     @Transactional
-    public void unvoteComment(String commentId, @NotNull UserPrincipal userPrincipal) {
+    public void unvoteComment(Long commentId, @NotNull UserPrincipal userPrincipal) {
         votingUtility.vote(commentId, userPrincipal, "unvote");
     }
-
 
 }

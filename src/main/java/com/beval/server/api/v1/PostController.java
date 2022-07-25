@@ -29,7 +29,7 @@ public class PostController {
 
     @GetMapping(value = "/posts/{subredditId}")
     public ResponseEntity<ResponseDTO> getAllPostsForSubreddit(
-            @PathVariable(value = "subredditId") String subredditId,
+            @PathVariable(value = "subredditId") Long subredditId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PageableDefault(page = PAGEABLE_DEFAULT_PAGE_NUMBER, size = PAGEABLE_DEFAULT_PAGE_SIZE)
             @SortDefault.SortDefaults({
@@ -56,7 +56,7 @@ public class PostController {
     public ResponseEntity<ResponseDTO> createPost(
             @RequestBody CreatePostDTO createPostDTO,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable(value = "subredditId") String subredditId) {
+            @PathVariable(value = "subredditId") Long subredditId) {
 
         postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId);
 
@@ -73,10 +73,10 @@ public class PostController {
 
     @DeleteMapping(value = "/posts/post/{postId}")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#postId, principal)" +
-            "OR @securityExpressionUtilityImpl.isSubredditModeratorOfPost(#postId, principal)")
+            "OR @securityExpressionUtilityImpl.isSubredditModeratorOfResource(#postId, principal)")
     public ResponseEntity<ResponseDTO> deletePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable(value = "postId") String postId
+            @PathVariable(value = "postId") Long postId
     ) {
 
         postService.deletePost(postId);
@@ -94,7 +94,7 @@ public class PostController {
 
     @PostMapping(value = "/posts/post/{postId}/upvote")
     public ResponseEntity<ResponseDTO> upvotePost(
-            @PathVariable String postId,
+            @PathVariable Long postId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         postService.upvotePost(postId, userPrincipal);
@@ -111,7 +111,7 @@ public class PostController {
 
     @PostMapping(value = "/posts/post/{postId}/downvote")
     public ResponseEntity<ResponseDTO> downvotePost(
-            @PathVariable String postId,
+            @PathVariable Long postId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         postService.downvotePost(postId, userPrincipal);
@@ -128,7 +128,7 @@ public class PostController {
 
     @PostMapping(value = "/posts/post/{postId}/unvote")
     public ResponseEntity<ResponseDTO> unvotePost(
-            @PathVariable String postId,
+            @PathVariable Long postId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         postService.unvotePost(postId, userPrincipal);

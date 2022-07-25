@@ -5,6 +5,7 @@ import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
+import com.beval.server.exception.UserBannedException;
 import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
 import com.beval.server.model.entity.SubredditEntity;
@@ -15,6 +16,7 @@ import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.PostService;
+import com.beval.server.utils.SecurityExpressionUtility;
 import com.beval.server.utils.VotingUtility;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
@@ -35,21 +37,25 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final VotingUtility votingUtility;
+    private final SecurityExpressionUtility securityExpressionUtility;
+
     public PostServiceImpl(PostRepository postRepository, SubredditRepository subredditRepository,
                            CommentRepository commentRepository, UserRepository userRepository,
-                           ModelMapper modelMapper, VotingUtility votingUtility) {
+                           ModelMapper modelMapper, VotingUtility votingUtility,
+                           SecurityExpressionUtility securityExpressionUtility) {
         this.postRepository = postRepository;
         this.subredditRepository = subredditRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.votingUtility = votingUtility;
+        this.securityExpressionUtility = securityExpressionUtility;
     }
 
     @Override
     @Transactional
-    public PageableDTO<PostDTO> getAllPostsForSubreddit(String subredditId, UserPrincipal userPrincipal, Pageable pageable) {
-        SubredditEntity subredditEntity = subredditRepository.findById(Long.parseLong(subredditId))
+    public PageableDTO<PostDTO> getAllPostsForSubreddit(Long subredditId, UserPrincipal userPrincipal, Pageable pageable) {
+        SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
                 .orElseThrow(ResourceNotFoundException::new);
         //user isn't required to be logged in
         UserEntity userEntity = null;
@@ -80,12 +86,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void createPostForSubreddit(@NotNull CreatePostDTO createPostDTO, @NotNull UserPrincipal userPrincipal, String subredditId) {
-        SubredditEntity subredditEntity = subredditRepository.findById(Long.parseLong(subredditId))
+    public void createPostForSubreddit(@NotNull CreatePostDTO createPostDTO, @NotNull UserPrincipal userPrincipal, Long subredditId) {
+        SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
                 .orElseThrow(ResourceNotFoundException::new);
 
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        if(securityExpressionUtility.isUserBannedFromSubreddit(subredditEntity.getId(), userPrincipal)){
+            throw new UserBannedException();
+        }
 
         //create the post
         PostEntity postEntity = postRepository.save(
@@ -105,35 +115,36 @@ public class PostServiceImpl implements PostService {
                         .content(createPostDTO.getOriginalComment().getContent())
                         .author(userEntity)
                         .parentComment(null)
+                        .subreddit(postEntity.getSubreddit())
                         .build()
         );
     }
 
     @Override
     @Transactional
-    public void deletePost(String postId) {
+    public void deletePost(Long postId) {
         //delete all comments
-        commentRepository.deleteAllByPostId(Long.parseLong(postId));
+        commentRepository.deleteAllByPostId(postId);
 
         //delete the post itself
-        postRepository.deleteById(Long.parseLong(postId));
+        postRepository.deleteById(postId);
     }
 
     @Override
     @Transactional
-    public void upvotePost(String postId, UserPrincipal userPrincipal) {
+    public void upvotePost(Long postId, UserPrincipal userPrincipal) {
         votingUtility.vote(postId, userPrincipal, "upvote");
     }
 
     @Override
     @Transactional
-    public void downvotePost(String postId, UserPrincipal userPrincipal) {
+    public void downvotePost(Long postId, UserPrincipal userPrincipal) {
         votingUtility.vote(postId, userPrincipal, "downvote");
     }
 
     @Override
     @Transactional
-    public void unvotePost(String postId, UserPrincipal userPrincipal) {
+    public void unvotePost(Long postId, UserPrincipal userPrincipal) {
         votingUtility.vote(postId, userPrincipal, "unvote");
     }
 

@@ -141,6 +141,7 @@ class CommentControllerIT {
                         .content("First test comment")
                         .author(testUser)
                         .parentComment(null)
+                        .subreddit(post1.getSubreddit())
                         .build()
         );
 
@@ -151,6 +152,7 @@ class CommentControllerIT {
                         .content("Second test comment")
                         .author(testUser)
                         .parentComment(null)
+                        .subreddit(post1.getSubreddit())
                         .build()
         );
         CommentEntity comment3 = commentRepository.save(
@@ -160,6 +162,7 @@ class CommentControllerIT {
                         .content("Third test comment")
                         .author(testUser)
                         .parentComment(null)
+                        .subreddit(post1.getSubreddit())
                         .build()
         );
         CommentEntity reply1 = commentRepository.save(
@@ -169,6 +172,7 @@ class CommentControllerIT {
                         .content("First reply to a comment")
                         .author(testUser)
                         .parentComment(testCommentWithReplies)
+                        .subreddit(post1.getSubreddit())
                         .build()
         );
 
@@ -179,6 +183,7 @@ class CommentControllerIT {
                         .content("Reply to reply")
                         .author(testUser)
                         .parentComment(reply1)
+                        .subreddit(post1.getSubreddit())
                         .build()
         );
 
@@ -195,6 +200,7 @@ class CommentControllerIT {
                 CommentEntity
                         .builder()
                         .post(post2)
+                        .subreddit(post2.getSubreddit())
                         .content("Comment for post2")
                         .author(testUser)
                         .parentComment(null)

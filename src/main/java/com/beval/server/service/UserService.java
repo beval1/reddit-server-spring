@@ -7,7 +7,7 @@ import com.beval.server.dto.response.UserProfileDTO;
 import com.beval.server.security.UserPrincipal;
 
 public interface UserService {
-    UserProfileDTO getUserProfile(String userId);
+    UserProfileDTO getUserProfile(Long userId);
 
     MyProfileDTO getMyProfile(UserPrincipal userPrincipal);
 
@@ -18,4 +18,8 @@ public interface UserService {
     void deleteProfileImage(UserPrincipal userPrincipal);
 
     void updateMyProfile(UserPrincipal userPrincipal, UpdateUserProfileDTO updateUserProfileDTO);
+
+    void banUserFromSubreddit(UserPrincipal principal, Long userId, Long subredditId);
+
+    void banUserFromApp(UserPrincipal principal, Long userId);
 }

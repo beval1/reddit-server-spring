@@ -62,7 +62,7 @@ public class SubredditController {
     @PatchMapping("/subreddits/subreddit/{subredditId}")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isSubredditModerator(#subredditId, principal)")
     public ResponseEntity<ResponseDTO> updateSubreddit(
-            @PathVariable String subredditId,
+            @PathVariable Long subredditId,
             @RequestBody CreateSubredditDTO createSubredditDTO,
             @AuthenticationPrincipal UserPrincipal principal
     ) {

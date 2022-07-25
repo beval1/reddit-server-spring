@@ -29,7 +29,7 @@ public class CommentController {
     }
 
     @GetMapping(value = "/comments/{postId}")
-    public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable String postId,
+    public ResponseEntity<ResponseDTO> getAllCommentsForPost(@PathVariable Long postId,
                                                              @AuthenticationPrincipal UserPrincipal principal,
                                                              @PageableDefault(page = PAGEABLE_DEFAULT_PAGE_NUMBER, size = PAGEABLE_DEFAULT_PAGE_SIZE)
                                                              @SortDefault.SortDefaults({
@@ -49,8 +49,8 @@ public class CommentController {
     }
 
     @GetMapping(value = "/comments/{postId}/comment/{commentId}")
-    public ResponseEntity<ResponseDTO> getAllRepliesForComment(@PathVariable String postId,
-                                                               @PathVariable String commentId,
+    public ResponseEntity<ResponseDTO> getAllRepliesForComment(@PathVariable Long postId,
+                                                               @PathVariable Long commentId,
                                                                @AuthenticationPrincipal UserPrincipal principal,
                                                                @PageableDefault(page = PAGEABLE_DEFAULT_PAGE_NUMBER, size = PAGEABLE_DEFAULT_PAGE_SIZE)
                                                                @SortDefault.SortDefaults({
@@ -72,7 +72,7 @@ public class CommentController {
     public ResponseEntity<ResponseDTO> createComment(
             @RequestBody CreateCommentDTO createCommentDTO,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable String postId) {
+            @PathVariable Long postId) {
         commentService.createComment(postId, createCommentDTO, userPrincipal);
 
         return ResponseEntity
@@ -87,7 +87,7 @@ public class CommentController {
 
     @PostMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> createReply(
-            @PathVariable String commentId,
+            @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody CreateCommentDTO createCommentDTO) {
         commentService.createReply(commentId, createCommentDTO, userPrincipal);
@@ -105,11 +105,11 @@ public class CommentController {
     @PreAuthorize("@securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)")
     @PatchMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> updateCommentOrReply(
-            @PathVariable String commentId,
+            @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody CreateCommentDTO createCommentDTO) {
 
-        commentService.updateCommentOrReply(commentId, createCommentDTO);
+        commentService.updateCommentOrReply(commentId, createCommentDTO, userPrincipal);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -122,10 +122,10 @@ public class CommentController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isResourceOwner(#commentId, principal)" +
-            "OR @securityExpressionUtilityImpl.isSubredditModeratorOfComment(#commentId, principal)")
+            "OR @securityExpressionUtilityImpl.isSubredditModeratorOfResource(#commentId, principal)")
     @DeleteMapping(value = "/comments/comment/{commentId}")
     public ResponseEntity<ResponseDTO> deleteCommentOrReply(
-            @PathVariable String commentId,
+            @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
         commentService.deleteCommentOrReply(commentId);
@@ -142,7 +142,7 @@ public class CommentController {
 
     @PostMapping(value = "/comments/comment/{commentId}/upvote")
     public ResponseEntity<ResponseDTO> upvoteComment(
-            @PathVariable String commentId,
+            @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         commentService.upvoteComment(commentId, userPrincipal);
@@ -159,7 +159,7 @@ public class CommentController {
 
     @PostMapping(value = "/comments/comment/{commentId}/downvote")
     public ResponseEntity<ResponseDTO> downVoteComment(
-            @PathVariable String commentId,
+            @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         commentService.downvoteComment(commentId, userPrincipal);
@@ -176,7 +176,7 @@ public class CommentController {
 
     @PostMapping(value = "/comments/comment/{commentId}/unvote")
     public ResponseEntity<ResponseDTO> unvoteComment(
-            @PathVariable String commentId,
+            @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         commentService.unvoteComment(commentId, userPrincipal);

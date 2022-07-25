@@ -1,23 +1,23 @@
 package com.beval.server.model.entity;
 
-import com.beval.server.model.interfaces.Upvotable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-public abstract class UpvotableEntity extends BaseEntity implements Upvotable {
+public abstract class UpvotableEntity extends BaseEntity {
     @ManyToMany
     @Builder.Default
     private Set<UserEntity> upvotedUsers = new HashSet<>();
@@ -34,40 +34,8 @@ public abstract class UpvotableEntity extends BaseEntity implements Upvotable {
     @NotNull
     private UserEntity author;
 
-    @Override
-    public Set<UserEntity> getUpvotedUsers() {
-        return upvotedUsers;
-    }
+    @ManyToOne
+    @NotNull
+    private SubredditEntity subreddit;
 
-    public void setUpvotedUsers(Set<UserEntity> upvotedUsers) {
-        this.upvotedUsers = upvotedUsers;
-    }
-
-    @Override
-    public Set<UserEntity> getDownvotedUsers() {
-        return downvotedUsers;
-    }
-
-    public void setDownvotedUsers(Set<UserEntity> downvotedUsers) {
-        this.downvotedUsers = downvotedUsers;
-    }
-
-    @Override
-    public boolean isArchived() {
-        return archived;
-    }
-
-    @Override
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
-
-    @Override
-    public UserEntity getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(UserEntity author) {
-        this.author = author;
-    }
 }

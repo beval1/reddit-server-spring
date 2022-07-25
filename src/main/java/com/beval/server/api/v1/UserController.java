@@ -10,6 +10,7 @@ import com.beval.server.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/users/user/{userId}")
-    public ResponseEntity<ResponseDTO> getUserProfile(@PathVariable(value = "userId") String userId) {
+    public ResponseEntity<ResponseDTO> getUserProfile(@PathVariable(value = "userId") Long userId) {
         UserProfileDTO userProfileDTO = userService.getUserProfile(userId);
 
         return ResponseEntity
@@ -143,6 +144,45 @@ public class UserController {
                                 .message("Banner Image deleted successfully!")
                                 .build()
 
+                );
+    }
+
+    @PostMapping("/users/user/{userId}/ban/{subredditId}")
+    @PreAuthorize("@securityExpressionUtilityImpl.isSubredditModerator(#subredditId, principal)")
+    public ResponseEntity<ResponseDTO> banUserFromSubreddit(
+            @PathVariable Long subredditId,
+            @PathVariable Long userId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+
+        userService.banUserFromSubreddit(principal, userId, subredditId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("User banned from the subreddit successfully!")
+                                .build()
+                );
+    }
+
+    @PostMapping("/users/user/{userId}/ban")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ResponseDTO> banUserFromApp(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+
+        userService.banUserFromApp(principal, userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("User banned from the app successfully!")
+                                .build()
                 );
     }
 

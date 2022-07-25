@@ -7,12 +7,15 @@ import com.beval.server.dto.response.UserProfileDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.model.entity.ImageEntity;
+import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
+import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CloudinaryService;
 import com.beval.server.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -24,21 +27,23 @@ import static com.beval.server.config.AppConstants.DEFAULT_USER_PROFILE_IMAGE_CL
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final SubredditRepository subredditRepository;
     private final ModelMapper modelMapper;
     private final CloudinaryService cloudinaryService;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper,
+    public UserServiceImpl(UserRepository userRepository, SubredditRepository subredditRepository, ModelMapper modelMapper,
                            CloudinaryService cloudinaryService) {
         this.userRepository = userRepository;
+        this.subredditRepository = subredditRepository;
         this.modelMapper = modelMapper;
         this.cloudinaryService = cloudinaryService;
     }
 
 
     @Override
-    public UserProfileDTO getUserProfile(String userId) {
+    public UserProfileDTO getUserProfile(Long userId) {
         //throw ResourceNotFoundException here if user isn't found because the user is what we are looking
-        UserEntity userEntity = userRepository.findById(Long.parseLong(userId))
+        UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(ResourceNotFoundException::new);
 
         return modelMapper.map(userEntity, UserProfileDTO.class);
@@ -127,5 +132,24 @@ public class UserServiceImpl implements UserService {
         userEntity.setBannerImage(null);
         //delete image in cloudinary and the database
         cloudinaryService.delete(bannerImage);
+    }
+
+    @Override
+    @Transactional
+    public void banUserFromSubreddit(UserPrincipal principal, Long userId, Long subredditId) {
+        UserEntity userForBan = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "User not found!"));
+        SubredditEntity subreddit = subredditRepository.findById(subredditId)
+                .orElseThrow(ResourceNotFoundException::new);
+
+        subreddit.getBannedUsers().add(userForBan);
+    }
+
+    @Override
+    @Transactional
+    public void banUserFromApp(UserPrincipal principal, Long userId) {
+        UserEntity userForBan = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "User not found!"));
+        userForBan.setEnabled(false);
     }
 }

@@ -101,6 +101,7 @@ public class DataLoader implements ApplicationRunner {
                         .content("lalalalal")
                         .author(user)
                         .parentComment(null)
+                        .subreddit(subreddit)
                         .build()
         );
         CommentEntity comment2 = commentRepository.save(
@@ -110,6 +111,7 @@ public class DataLoader implements ApplicationRunner {
                         .content("bababababababa")
                         .author(user)
                         .parentComment(null)
+                        .subreddit(subreddit)
                         .build()
         );
         CommentEntity comment3 = commentRepository.save(
@@ -119,6 +121,7 @@ public class DataLoader implements ApplicationRunner {
                         .content("hahahahaahahahaha")
                         .author(user)
                         .parentComment(null)
+                        .subreddit(subreddit)
                         .build()
         );
         CommentEntity reply1 = commentRepository.save(
@@ -128,6 +131,7 @@ public class DataLoader implements ApplicationRunner {
                         .content("22222222222222")
                         .author(user)
                         .parentComment(commentEntity)
+                        .subreddit(subreddit)
                         .build()
         );
 
@@ -138,6 +142,7 @@ public class DataLoader implements ApplicationRunner {
                         .content("3333333333333333333")
                         .author(user)
                         .parentComment(reply1)
+                        .subreddit(subreddit)
                         .build()
         );
 
