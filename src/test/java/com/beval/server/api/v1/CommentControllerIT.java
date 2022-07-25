@@ -52,6 +52,8 @@ class CommentControllerIT {
     private CommentEntity testCommentWithReplies;
     private CommentEntity comment2;
     private CommentEntity comment_post2;
+    private CommentEntity archived_comment;
+    private PostEntity archived_post;
 
     @BeforeEach
     public void setUp() {
@@ -116,12 +118,27 @@ class CommentControllerIT {
                         .build()
         );
 
+        UserEntity bannedUser =  userRepository.save(
+                UserEntity
+                        .builder()
+                        .username("banned_user")
+                        .password(pass)
+                        .enabled(true)
+                        .roles(Set.of(adminRole))
+                        .birthdate(null)
+                        .firstName("Banned")
+                        .lastName("User")
+                        .email("banned@user.com")
+                        .build()
+        );
+
         SubredditEntity subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
                         .moderators(List.of(SubredditModerator))
                         .name("SubredditName")
                         .description("new subreddit description with enough characters")
+                        .bannedUsers(List.of(bannedUser))
                         .build()
         );
 
@@ -200,6 +217,26 @@ class CommentControllerIT {
                         .parentComment(null)
                         .build()
         );
+
+        archived_post = postRepository.save(
+                PostEntity
+                        .builder()
+                        .title("Archived test post")
+                        .author(testUser)
+                        .subreddit(subreddit)
+                        .build()
+        );
+
+         archived_comment = commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(archived_post)
+                        .content("Archived comment for post2")
+                        .author(testUser)
+                        .parentComment(null)
+                        .archived(true)
+                        .build()
+        );
     }
 
     @AfterEach
@@ -226,7 +263,6 @@ class CommentControllerIT {
         mockMvc.perform(get(API_BASE + "/comments/" + comment_post2.getPost().getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content.pageContent", hasSize(1)))
                 .andExpect(jsonPath("$.content.pageContent[0].upvotedByUser", Matchers.is(true)));
     }
 
@@ -272,6 +308,36 @@ class CommentControllerIT {
     }
 
     @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void createComment_WhenUserIsBanned_IsForbidden() throws Exception {
+        CommentDTO commentDTO = CommentDTO
+                .builder()
+                .content("test comment content")
+                .build();
+
+        mockMvc.perform(post(API_BASE + "/comments/" + post1.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDTO))
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void createComment_WhenPostIsArchived_IsForbidden() throws Exception {
+        CommentDTO commentDTO = CommentDTO
+                .builder()
+                .content("test comment content")
+                .build();
+
+        mockMvc.perform(post(API_BASE + "/comments/" + archived_post.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDTO))
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void createReply() throws Exception {
         CommentDTO commentDTO = CommentDTO
@@ -283,8 +349,7 @@ class CommentControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDTO))
                 )
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -302,6 +367,35 @@ class CommentControllerIT {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void createReply_WhenUserIsBanned_IsForbidden() throws Exception {
+        CommentDTO commentDTO = CommentDTO
+                .builder()
+                .content("test comment content")
+                .build();
+
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + comment2.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDTO))
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void createReply_WhenParentCommentIsArchived_IsForbidden() throws Exception {
+        CommentDTO commentDTO = CommentDTO
+                .builder()
+                .content("test comment content")
+                .build();
+
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + archived_comment.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDTO))
+                )
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     @WithAnonymousUser
@@ -341,6 +435,34 @@ class CommentControllerIT {
                 .build();
 
         mockMvc.perform(patch(API_BASE + "/comments/comment/" + testCommentWithReplies.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void updateCommentOrReply_WhenUserIsBanned_IsForbidden() throws Exception {
+        CommentDTO commentDTO = CommentDTO
+                .builder()
+                .content("updated comment content")
+                .build();
+
+        mockMvc.perform(patch(API_BASE + "/comments/comment/" + testCommentWithReplies.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void updateCommentOrReply_WhenParentCommentIsArchived_IsForbidden() throws Exception {
+        CommentDTO commentDTO = CommentDTO
+                .builder()
+                .content("updated comment content")
+                .build();
+
+        mockMvc.perform(patch(API_BASE + "/comments/comment/" + archived_comment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDTO)))
                 .andExpect(status().isForbidden());
@@ -421,5 +543,47 @@ class CommentControllerIT {
     void unvoteComment_WhenAnonymous_IsUnauthorized() throws Exception {
         mockMvc.perform(post(API_BASE + "/comments/comment/" + comment2.getId() + "/unvote"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void unvoteComment_WhenUserIsBanned_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + comment2.getId() + "/unvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void downVoteComment_WhenUserIsBanned_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + comment2.getId() + "/downvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void upvoteComment_WhenUserIsBanned_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + comment2.getId() + "/upvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void unvoteComment_WhenCommentIsArchived_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + archived_comment.getId() + "/unvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void downVoteComment_WhenCommentIsArchived_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + archived_comment.getId() + "/downvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void upvoteComment_WhenCommentIsArchived_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/comments/comment/" + archived_comment.getId() + "/upvote"))
+                .andExpect(status().isForbidden());
     }
 }

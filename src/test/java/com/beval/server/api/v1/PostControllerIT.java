@@ -58,6 +58,9 @@ class PostControllerIT {
 
     private SubredditEntity subreddit;
     private PostEntity post;
+    private PostEntity archived_post;
+    private PostEntity post_new_sub;
+    private SubredditEntity new_sub;
 
     @BeforeEach
     void setUp() {
@@ -108,6 +111,20 @@ class PostControllerIT {
                         .build()
         );
 
+        UserEntity bannedUser =  userRepository.save(
+                UserEntity
+                        .builder()
+                        .username("banned_user")
+                        .password(pass)
+                        .enabled(true)
+                        .roles(Set.of(adminRole))
+                        .birthdate(null)
+                        .firstName("Banned")
+                        .lastName("User")
+                        .email("banned@user.com")
+                        .build()
+        );
+
         subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
@@ -123,6 +140,35 @@ class PostControllerIT {
                         .author(testUser)
                         .subreddit(subreddit)
                         .title("New post title")
+                        .build()
+        );
+
+        new_sub = subredditRepository.save(
+                SubredditEntity
+                        .builder()
+                        .moderators(List.of(SubredditModerator))
+                        .name("NewSub")
+                        .description("new subreddit description with enough characters")
+                        .bannedUsers(List.of(bannedUser))
+                        .build()
+        );
+
+        post_new_sub = postRepository.save(
+                PostEntity
+                        .builder()
+                        .author(testUser)
+                        .subreddit(new_sub)
+                        .title("New post title")
+                        .build()
+        );
+
+        archived_post = postRepository.save(
+                PostEntity
+                        .builder()
+                        .author(testUser)
+                        .subreddit(new_sub)
+                        .title("New post title")
+                        .archived(true)
                         .build()
         );
     }
@@ -152,7 +198,6 @@ class PostControllerIT {
         mockMvc.perform(get(API_BASE + "/posts/" + subreddit.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content.pageContent", hasSize(1)))
                 .andExpect(jsonPath("$.content.pageContent[0].upvotedByUser", Matchers.is(true)));
     }
 
@@ -174,6 +219,26 @@ class PostControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createPostDTO)))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void createPost_WhenUserIsBanned_IsForbidden() throws Exception {
+        CreatePostDTO createPostDTO = CreatePostDTO
+                .builder()
+                .title("My new post title")
+                .originalComment(CreateCommentDTO
+                        .builder()
+                        .content("comment content")
+                        .build())
+                .build();
+
+        log.info(objectMapper.writeValueAsString(createPostDTO));
+
+        mockMvc.perform(post(API_BASE + "/posts/" + new_sub.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createPostDTO)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -262,5 +327,48 @@ class PostControllerIT {
     void unvotePost_WhenAnonymous_IsUnauthorized() throws Exception {
         mockMvc.perform(post(API_BASE + "/posts/post/" + post.getId() + "/unvote"))
                 .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void unvotePost_WhenUserIsBanned_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/posts/post/" + post_new_sub.getId() + "/unvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void downVotePost_WhenUserIsBanned_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/posts/post/" + post_new_sub.getId() + "/downvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void upvotePost_WhenUserIsBanned_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/posts/post/" + post_new_sub.getId() + "/upvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void unvotePost_WhenPostIsArchived_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/posts/post/" + archived_post.getId() + "/unvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void downVotePost_WhenPostIsArchived_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/posts/post/" + archived_post.getId() + "/downvote"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void upvotePost_WhenPostIsArchived_IsForbidden() throws Exception {
+        mockMvc.perform(post(API_BASE + "/posts/post/" + archived_post.getId() + "/upvote"))
+                .andExpect(status().isForbidden());
     }
 }
