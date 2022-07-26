@@ -6,7 +6,8 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.beval.server.config.AppConstants.MAXIMUM_SUBREDDIT_DESCRIPTION_LENGTH;
 import static com.beval.server.config.AppConstants.MINIMUM_SUBREDDIT_DESCRIPTION_LENGTH;
@@ -32,12 +33,14 @@ public class SubredditEntity extends BaseEntity {
     @JoinTable(name = "subbreddits_moderators",
             joinColumns = @JoinColumn(name = "subbredit_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<UserEntity> moderators;
+    @Builder.Default
+    private Set<UserEntity> moderators = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "subbreddits_bans",
             joinColumns = @JoinColumn(name = "subbredit_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<UserEntity> bannedUsers;
+    @Builder.Default
+    private Set<UserEntity> bannedUsers = new HashSet<>();
 
 }

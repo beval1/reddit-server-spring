@@ -7,7 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -57,11 +57,18 @@ public class UserEntity extends BaseEntity {
     @ManyToMany
     @JoinTable(name="users_upvotes", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id"))
-    private List<PostEntity> upvotedPosts;
+    @Builder.Default
+    private Set<PostEntity> upvotedPosts = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name="users_downvotes", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id"))
-    private List<PostEntity> downvotedPosts;
+    @Builder.Default
+    private Set<PostEntity> downvotedPosts = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(name="users_subreddits", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "subreddit_id"))
+    @Builder.Default
+    private Set<SubredditEntity> subreddits = new HashSet<>();
 }

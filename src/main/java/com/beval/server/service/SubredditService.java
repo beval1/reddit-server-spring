@@ -10,4 +10,6 @@ public interface SubredditService {
     PageableDTO<SubredditDTO> getAllSubreddits(Pageable pageable);
     void createSubreddit(CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
     void updateSubreddit(Long subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
+
+    void joinSubreddit(UserPrincipal principal, Long subredditId);
 }

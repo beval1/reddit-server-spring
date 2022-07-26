@@ -54,7 +54,22 @@ public class SubredditController {
                 .body(
                         ResponseDTO
                                 .builder()
-                                .message("Subreddit created successfully")
+                                .message("Subreddit created successfully!")
+                                .build()
+                );
+    }
+
+    @PostMapping("/subreddits/join/{subredditId}")
+    public ResponseEntity<ResponseDTO> joinSubreddit(@AuthenticationPrincipal UserPrincipal principal,
+                                                     @PathVariable Long subredditId) {
+        subredditService.joinSubreddit(principal, subredditId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Subreddit joined successfully!")
                                 .build()
                 );
     }

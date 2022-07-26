@@ -1,5 +1,7 @@
 package com.beval.server.api.v1;
 
+import com.beval.server.ResetDatabase;
+import com.beval.server.ResetDatabaseTestExecutionListener;
 import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.model.entity.*;
 import com.beval.server.model.enums.RoleEnum;
@@ -17,8 +19,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
@@ -29,8 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class CommentControllerIT {
-
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -135,10 +140,10 @@ class CommentControllerIT {
         SubredditEntity subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .moderators(List.of(SubredditModerator))
+                        .moderators(Set.of(SubredditModerator))
                         .name("SubredditName")
                         .description("new subreddit description with enough characters")
-                        .bannedUsers(List.of(bannedUser))
+                        .bannedUsers(Set.of(bannedUser))
                         .build()
         );
 
@@ -239,13 +244,13 @@ class CommentControllerIT {
         );
     }
 
-    @AfterEach
-    void tearDown() {
-        commentRepository.deleteAll();
-        postRepository.deleteAll();
-        subredditRepository.deleteAll();
-        userRepository.deleteAll();
-    }
+//    @AfterEach
+//    void tearDown() {
+//        commentRepository.deleteAll();
+//        postRepository.deleteAll();
+//        subredditRepository.deleteAll();
+//        userRepository.deleteAll();
+//    }
 
     @Test
     void getAllCommentsForPost() throws Exception {

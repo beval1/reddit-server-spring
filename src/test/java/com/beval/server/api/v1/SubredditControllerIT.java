@@ -1,5 +1,7 @@
 package com.beval.server.api.v1;
 
+import com.beval.server.ResetDatabase;
+import com.beval.server.ResetDatabaseTestExecutionListener;
 import com.beval.server.dto.response.SubredditDTO;
 import com.beval.server.model.entity.RoleEntity;
 import com.beval.server.model.entity.SubredditEntity;
@@ -20,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
@@ -33,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class SubredditControllerIT {
     @Autowired
     private MockMvc mockMvc;
@@ -70,7 +75,7 @@ class SubredditControllerIT {
                         .build()
         );
 
-        UserEntity SubredditModerator =  userRepository.save(
+        UserEntity subredditModerator =  userRepository.save(
                 UserEntity
                         .builder()
                         .username("subreddit_moderator")
@@ -101,18 +106,11 @@ class SubredditControllerIT {
         this.subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .moderators(List.of(SubredditModerator))
+                        .moderators(Set.of(subredditModerator))
                         .name("SubredditName")
                         .description("new subreddit description with enough characters")
                         .build()
         );
-    }
-
-    @AfterEach
-    void tearDown() {
-        subredditRepository.deleteAll();
-        userRepository.deleteAll();
-        roleRepository.deleteAll();
     }
 
     @Test
@@ -122,6 +120,13 @@ class SubredditControllerIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content.pageContent", hasSize(1)));
     }
+
+//    @AfterEach
+//    void tearDown() {
+//        subredditRepository.deleteAll();
+//        userRepository.deleteAll();
+//        roleRepository.deleteAll();
+//    }
 
     @Test
     @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -212,5 +217,19 @@ class SubredditControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(subredditDTO)))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void joinSubreddit_WhenUserIsAnonymous_IsUnauthorized() throws Exception {
+        mockMvc.perform(post(API_BASE + "/subreddits/join/" + subreddit.getId()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void joinSubreddit_WhenUserIsLoggedIn_WorksCorrectly() throws Exception {
+        mockMvc.perform(post(API_BASE + "/subreddits/join/" + subreddit.getId()))
+                .andExpect(status().isOk());
     }
 }

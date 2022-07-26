@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SubredditServiceImpl implements SubredditService {
@@ -59,7 +60,7 @@ public class SubredditServiceImpl implements SubredditService {
                 .builder()
                 .name(createSubredditDTO.getTitle())
                 .description(createSubredditDTO.getDescription())
-                .moderators(List.of(userEntity))
+                .moderators(Set.of(userEntity))
                 .build();
         subredditRepository.save(subredditEntity);
     }
@@ -76,5 +77,16 @@ public class SubredditServiceImpl implements SubredditService {
         if (createSubredditDTO.getTitle() != null){
             subredditEntity.setDescription(createSubredditDTO.getDescription());
         }
+    }
+
+    @Override
+    @Transactional
+    public void joinSubreddit(UserPrincipal principal, Long subredditId) {
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(principal.getUsername(), principal.getUsername())
+                .orElseThrow(NotAuthorizedException::new);
+        SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
+                .orElseThrow(ResourceNotFoundException::new);
+
+        userEntity.getSubreddits().add(subredditEntity);
     }
 }

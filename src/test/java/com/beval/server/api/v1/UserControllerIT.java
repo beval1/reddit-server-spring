@@ -90,7 +90,7 @@ class UserControllerIT {
                         .build()
         );
 
-        UserEntity SubredditModerator =  userRepository.save(
+        UserEntity subredditModerator =  userRepository.save(
                 UserEntity
                         .builder()
                         .username("subreddit_moderator")
@@ -121,7 +121,7 @@ class UserControllerIT {
         this.subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .moderators(List.of(SubredditModerator))
+                        .moderators(Set.of(subredditModerator))
                         .name("SubredditName")
                         .description("new subreddit description with enough characters")
                         .build()

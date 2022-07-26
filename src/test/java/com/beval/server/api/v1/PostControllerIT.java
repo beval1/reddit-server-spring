@@ -1,5 +1,7 @@
 package com.beval.server.api.v1;
 
+import com.beval.server.ResetDatabase;
+import com.beval.server.ResetDatabaseTestExecutionListener;
 import com.beval.server.dto.payload.CreateCommentDTO;
 import com.beval.server.dto.payload.CreatePostDTO;
 import com.beval.server.dto.response.PostDTO;
@@ -24,19 +26,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
 import static com.beval.server.config.AppConstants.API_BASE;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest()
 @AutoConfigureMockMvc
-@Slf4j
+@Transactional
 class PostControllerIT {
 
     @Autowired
@@ -128,7 +134,7 @@ class PostControllerIT {
         subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .moderators(List.of(SubredditModerator))
+                        .moderators(Set.of(SubredditModerator))
                         .name("SubredditName")
                         .description("new subreddit description with enough characters")
                         .build()
@@ -146,10 +152,10 @@ class PostControllerIT {
         new_sub = subredditRepository.save(
                 SubredditEntity
                         .builder()
-                        .moderators(List.of(SubredditModerator))
+                        .moderators(Set.of(SubredditModerator))
                         .name("NewSub")
                         .description("new subreddit description with enough characters")
-                        .bannedUsers(List.of(bannedUser))
+                        .bannedUsers(Set.of(bannedUser))
                         .build()
         );
 
@@ -173,14 +179,14 @@ class PostControllerIT {
         );
     }
 
-    @AfterEach
-    void tearDown() {
-        commentRepository.deleteAll();
-        postRepository.deleteAll();
-        subredditRepository.deleteAll();
-        userRepository.deleteAll();
-        roleRepository.deleteAll();
-    }
+//    @AfterEach
+//    void tearDown() {
+//        commentRepository.deleteAll();
+//        postRepository.deleteAll();
+//        subredditRepository.deleteAll();
+//        userRepository.deleteAll();
+//        roleRepository.deleteAll();
+//    }
 
     @Test
     void getAllPostsForSubreddit() throws Exception {
@@ -213,8 +219,6 @@ class PostControllerIT {
                         .build())
                 .build();
 
-        log.info(objectMapper.writeValueAsString(createPostDTO));
-
         mockMvc.perform(post(API_BASE + "/posts/" + subreddit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createPostDTO)))
@@ -232,8 +236,6 @@ class PostControllerIT {
                         .content("comment content")
                         .build())
                 .build();
-
-        log.info(objectMapper.writeValueAsString(createPostDTO));
 
         mockMvc.perform(post(API_BASE + "/posts/" + new_sub.getId())
                         .contentType(MediaType.APPLICATION_JSON)

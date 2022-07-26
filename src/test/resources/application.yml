@@ -2,6 +2,7 @@ app:
     jwtExpirationMs: 60000000
     jwtSecret: ${JWT_SECRET_KEY}
     dataLoader: false
+    databaseSchema: "reddit"
 cloudinary:
     apiKey: 548943318855874
     apiSecret: ${CLOUDINARY_API_SECRET}
@@ -9,6 +10,11 @@ cloudinary:
 server:
     port: 8084
 spring:
+    datasource:
+        url: jdbc:h2:mem:test
+        driver-class-name: org.h2.Driver
+        username: sa
+        password:
     data:
         web:
             pageable:
