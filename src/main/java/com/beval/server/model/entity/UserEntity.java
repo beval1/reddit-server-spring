@@ -22,9 +22,7 @@ public class UserEntity extends BaseEntity {
     private String username;
     @NotNull
     private String password;
-    @NotNull
     private String firstName;
-    @NotNull
     private String lastName;
     @EmailValidator
     private String email;
@@ -50,25 +48,27 @@ public class UserEntity extends BaseEntity {
     // when user is deleted, delete the corresponding roles in the mapping table
     @NotNull
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="users_roles", joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name="users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles;
 
     @ManyToMany
-    @JoinTable(name="users_upvotes", joinColumns = @JoinColumn(name = "user_id"),
+    @JoinTable(name="user_post_upvotes",
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id"))
     @Builder.Default
     private Set<PostEntity> upvotedPosts = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(name="users_downvotes", joinColumns = @JoinColumn(name = "user_id"),
+    @JoinTable(name="user_post_downvotes",
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id"))
     @Builder.Default
     private Set<PostEntity> downvotedPosts = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name="users_subreddits", joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "subreddit_id"))
+    @ManyToMany(mappedBy = "members")
     @Builder.Default
     private Set<SubredditEntity> subreddits = new HashSet<>();
+
 }

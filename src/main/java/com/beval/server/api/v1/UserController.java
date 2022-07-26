@@ -42,6 +42,7 @@ public class UserController {
                 );
     }
 
+    //TODO: add preauthorize
     @PatchMapping(value = "/users/my-profile")
     public ResponseEntity<ResponseDTO> updateMyProfile(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                        @RequestBody UpdateUserProfileDTO updateUserProfileDTO) {
@@ -182,6 +183,22 @@ public class UserController {
                         ResponseDTO
                                 .builder()
                                 .message("User banned from the app successfully!")
+                                .build()
+                );
+    }
+
+    @DeleteMapping("/users/my-profile")
+    public ResponseEntity<ResponseDTO> deleteMyAccount(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        userService.deleteMyProfile(principal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Profile deleted successfully!")
                                 .build()
                 );
     }

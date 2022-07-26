@@ -4,12 +4,14 @@ import com.beval.server.dto.payload.ImageUploadPayloadDTO;
 import com.beval.server.dto.payload.UpdateUserProfileDTO;
 import com.beval.server.dto.response.MyProfileDTO;
 import com.beval.server.dto.response.UserProfileDTO;
+import com.beval.server.exception.ApiException;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.model.entity.ImageEntity;
 import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.repository.SubredditRepository;
+import com.beval.server.repository.UpvotableRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CloudinaryService;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Set;
 
 import static com.beval.server.config.AppConstants.DEFAULT_USER_BANNER_IMAGE_CLOUDINARY_FOLDER;
 import static com.beval.server.config.AppConstants.DEFAULT_USER_PROFILE_IMAGE_CLOUDINARY_FOLDER;
@@ -30,13 +33,15 @@ public class UserServiceImpl implements UserService {
     private final SubredditRepository subredditRepository;
     private final ModelMapper modelMapper;
     private final CloudinaryService cloudinaryService;
+    private final UpvotableRepository upvotableRepository;
 
     public UserServiceImpl(UserRepository userRepository, SubredditRepository subredditRepository, ModelMapper modelMapper,
-                           CloudinaryService cloudinaryService) {
+                           CloudinaryService cloudinaryService, UpvotableRepository upvotableRepository) {
         this.userRepository = userRepository;
         this.subredditRepository = subredditRepository;
         this.modelMapper = modelMapper;
         this.cloudinaryService = cloudinaryService;
+        this.upvotableRepository = upvotableRepository;
     }
 
 
@@ -151,5 +156,30 @@ public class UserServiceImpl implements UserService {
         UserEntity userForBan = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "User not found!"));
         userForBan.setEnabled(false);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMyProfile(UserPrincipal userPrincipal) {
+        UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+
+        deleteProfileImage(userPrincipal);
+        deleteBannerImage(userPrincipal);
+        userEntity.setDownvotedPosts(null);
+        userEntity.setUpvotedPosts(null);
+        Set<SubredditEntity> userSubreddits = userEntity.getSubreddits();
+        //every moderator has already joined the subreddit
+        //every banned user has already joined the subreddit
+        if (userSubreddits != null) {
+            userSubreddits.forEach(sub -> sub.getModerators().remove(userEntity));
+            userSubreddits.forEach(sub -> sub.getBannedUsers().remove(userEntity));
+            userSubreddits.forEach(sub -> sub.getMembers().remove(userEntity));
+        }
+        userEntity.setSubreddits(null);
+        UserEntity deletedUser = userRepository.findByUsernameOrEmail("deleted", "deleted")
+                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "No deleted user in the database!"));
+        upvotableRepository.findAllByAuthor(userEntity).forEach(upvotable -> upvotable.setAuthor(deletedUser));
+        userRepository.deleteById(userEntity.getId());
     }
 }

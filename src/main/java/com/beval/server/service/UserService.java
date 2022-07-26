@@ -22,4 +22,6 @@ public interface UserService {
     void banUserFromSubreddit(UserPrincipal principal, Long userId, Long subredditId);
 
     void banUserFromApp(UserPrincipal principal, Long userId);
+
+    void deleteMyProfile(UserPrincipal principal);
 }

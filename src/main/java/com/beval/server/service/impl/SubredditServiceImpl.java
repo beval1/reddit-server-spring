@@ -88,5 +88,6 @@ public class SubredditServiceImpl implements SubredditService {
                 .orElseThrow(ResourceNotFoundException::new);
 
         userEntity.getSubreddits().add(subredditEntity);
+        subredditEntity.getMembers().add(userEntity);
     }
 }

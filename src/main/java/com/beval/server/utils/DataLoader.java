@@ -37,6 +37,20 @@ public class DataLoader implements ApplicationRunner {
         RoleEntity adminRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.ADMIN).build());
         RoleEntity userRole = roleRepository.save(RoleEntity.builder().roleName(RoleEnum.USER).build());
 
+        UserEntity deletedUser = userRepository.save(
+                UserEntity
+                        .builder()
+                        .username("deleted")
+                        .password("$2a$12$w.GNfFrtuRMFSxWq0TZsgO2M/O3jTwZ8cvdL3X/EW0XQKNitCqD6K")
+                        .enabled(false)
+                        .roles(Set.of(userRole))
+                        .birthdate(null)
+                        .firstName(null)
+                        .lastName(null)
+                        .email("deleted@deleted.com")
+                        .build()
+        );
+
         UserEntity user = userRepository.save(
                 UserEntity
                         .builder()
@@ -73,6 +87,10 @@ public class DataLoader implements ApplicationRunner {
                         .description("tralalalallalallalallalallalalalalalallalalallalalal")
                         .build()
         );
+
+        //Add member
+        user.getSubreddits().add(subreddit);
+        subreddit.getMembers().add(user);
 
         PostEntity post = postRepository.save(
             PostEntity

@@ -43,4 +43,11 @@ public class SubredditEntity extends BaseEntity {
     @Builder.Default
     private Set<UserEntity> bannedUsers = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(name = "users_subreddits",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "subreddit_id"))
+    @Builder.Default
+    private Set<UserEntity> members = new HashSet<>();
+
 }
