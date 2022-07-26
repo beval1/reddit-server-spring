@@ -118,6 +118,20 @@ class UserControllerIT {
                         .build()
         );
 
+        UserEntity deletedUser = userRepository.save(
+                UserEntity
+                        .builder()
+                        .username("deleted")
+                        .password(pass)
+                        .enabled(false)
+                        .roles(Set.of(userRole))
+                        .birthdate(null)
+                        .firstName(null)
+                        .lastName(null)
+                        .email("deleted@deleted.com")
+                        .build()
+        );
+
         this.subreddit = subredditRepository.save(
                 SubredditEntity
                         .builder()
@@ -294,6 +308,20 @@ class UserControllerIT {
     void banUserFromApp_WhenAnonymous_IsUnauthorized() throws Exception {
         mockMvc.perform(post(API_BASE + "/users/user/" + testUser.getId() + "/ban/"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void deleteMyProfile_WhenAnonymous_IsUnauthorized() throws Exception {
+        mockMvc.perform(delete(API_BASE + "/users/my-profile"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void deleteMyProfile_WhenLoggedIn_WorksCorrectly() throws Exception {
+        mockMvc.perform(delete(API_BASE + "/users/my-profile"))
+                .andExpect(status().isOk());
     }
 
 }
