@@ -33,7 +33,7 @@ public abstract class UpvotableEntity extends BaseEntity {
     @Builder.Default
     private boolean archived = false;
 
-    @OneToOne
+    @ManyToOne
     @NotNull
     private UserEntity author;
 

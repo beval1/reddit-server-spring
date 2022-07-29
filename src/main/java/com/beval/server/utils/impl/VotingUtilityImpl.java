@@ -65,14 +65,14 @@ public class VotingUtilityImpl implements VotingUtility {
                     upvotableEntity.getDownvotedUsers().remove(userEntity);
                 }
                 upvotableEntity.getUpvotedUsers().add(userEntity);
-                setUserKarmaAndVotedPosts(upvotableEntity, action, userEntity);
+                setUserKarma(upvotableEntity, action, userEntity);
             }
             case "downvote" -> {
                 if (upvotableEntity.getUpvotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))) {
                     upvotableEntity.getUpvotedUsers().remove(userEntity);
                 }
                 upvotableEntity.getDownvotedUsers().add(userEntity);
-                setUserKarmaAndVotedPosts(upvotableEntity, action, userEntity);
+                setUserKarma(upvotableEntity, action, userEntity);
             }
             case "unvote" -> {
                 if (upvotableEntity.getDownvotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))) {
@@ -81,7 +81,7 @@ public class VotingUtilityImpl implements VotingUtility {
                 if (upvotableEntity.getUpvotedUsers().stream().anyMatch(u -> u.getId().equals(userEntity.getId()))) {
                     upvotableEntity.getUpvotedUsers().remove(userEntity);
                 }
-                setUserKarmaAndVotedPosts(upvotableEntity, action, userEntity);
+                setUserKarma(upvotableEntity, action, userEntity);
 
             }
             //that would be developer mistake
@@ -89,7 +89,7 @@ public class VotingUtilityImpl implements VotingUtility {
         }
     }
 
-    private void setUserKarmaAndVotedPosts(UpvotableEntity upvotableEntity, String action, UserEntity userEntity){
+    private void setUserKarma(UpvotableEntity upvotableEntity, String action, UserEntity userEntity){
         if (action.equals("upvote")){
             if (upvotableEntity instanceof CommentEntity) {
                 upvotableEntity.getAuthor().setCommentKarma(upvotableEntity.getAuthor().getCommentKarma() +
@@ -97,7 +97,7 @@ public class VotingUtilityImpl implements VotingUtility {
             } else if (upvotableEntity instanceof PostEntity){
                 upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma() +
                         (1*POST_KARMA_UPVOTE_MULTIPLIER));
-                userEntity.getUpvotedPosts().add(((PostEntity) upvotableEntity));
+//                userEntity.getUpvotedPosts().add(((PostEntity) upvotableEntity));
             }
         } else if (action.equals("downvote")){
             if (upvotableEntity instanceof CommentEntity) {
@@ -106,14 +106,15 @@ public class VotingUtilityImpl implements VotingUtility {
             } else if (upvotableEntity instanceof PostEntity){
                 upvotableEntity.getAuthor().setPostKarma(upvotableEntity.getAuthor().getPostKarma() -
                         (1*POST_KARMA_DOWNVOTE_MULTIPLIER));
-                userEntity.getDownvotedPosts().add(((PostEntity) upvotableEntity));
-            }
-        } else {
-            if (upvotableEntity instanceof PostEntity){
-                userEntity.getDownvotedPosts().remove(upvotableEntity);
-                userEntity.getUpvotedPosts().remove(upvotableEntity);
+//                userEntity.getDownvotedPosts().add(((PostEntity) upvotableEntity));
             }
         }
+//        else {
+//            if (upvotableEntity instanceof PostEntity){
+//                userEntity.getDownvotedPosts().remove(upvotableEntity);
+//                userEntity.getUpvotedPosts().remove(upvotableEntity);
+//            }
+//        }
     }
 
     //sets downvoted and upvoted attributes of CommentDTO
