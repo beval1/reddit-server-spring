@@ -166,8 +166,6 @@ public class UserServiceImpl implements UserService {
 
         deleteProfileImage(userPrincipal);
         deleteBannerImage(userPrincipal);
-        userEntity.setDownvotedPosts(null);
-        userEntity.setUpvotedPosts(null);
         Set<SubredditEntity> userSubreddits = userEntity.getSubreddits();
         //every moderator has already joined the subreddit
         //every banned user has already joined the subreddit
