@@ -34,7 +34,7 @@ public class SecurityConfiguration {
 
 
         http.cors().disable().csrf().disable()
-//                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                 .antMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/v1/comments/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/v1/users/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/get-feed").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

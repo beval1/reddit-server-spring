@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     //exceptions for user authentications are later caught by the authenticationEntryPoint if not here
-
+    //but this is required because of swagger
     @ExceptionHandler({DisabledException.class, BadCredentialsException.class,
             LockedException.class, CredentialsExpiredException.class, AccountExpiredException.class})
     public ResponseEntity<Object> handleAccountExceptions(Exception ex) {
@@ -27,20 +27,6 @@ public class GlobalExceptionHandler {
                         .build()
         );
     }
-
-    //default handler for all exceptions but spring default handler does a good job
-
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<Object> handleDefault(Exception ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-//                ResponseDto
-//                        .builder()
-//                        .message(ex.getMessage())
-//                        .content(null)
-//                        .timestamp(LocalDateTime.now())
-//                        .build()
-//        );
-//    }
 
     @ExceptionHandler({ResourceNotFoundException.class, ResourceArchivedException.class, RoleNotFoundException.class,
             UserAlreadyExistsException.class, NotAuthorizedException.class, CloudinaryException.class,

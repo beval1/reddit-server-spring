@@ -64,7 +64,7 @@ public class PostServiceImpl implements PostService {
                     userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
         }
 
-        Page<PostEntity> postEntities = postRepository.findAllBySubredditOrderByCreatedOn(subredditEntity, pageable);
+        Page<PostEntity> postEntities = postRepository.findAllBySubreddit(subredditEntity, pageable);
         List<PostDTO> postDTOS = Arrays.asList(modelMapper.map(postEntities.getContent(), PostDTO[].class));
         for (int i = 0; i < postDTOS.size(); i++) {
             votingUtility.setUpvotedAndDownvotedForUser(postEntities.getContent().get(i), postDTOS.get(i), userEntity);

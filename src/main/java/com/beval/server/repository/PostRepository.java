@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
-    Page<PostEntity> findAllBySubredditOrderByCreatedOn(SubredditEntity subredditId, Pageable pageable);
+    Page<PostEntity> findAllBySubreddit(SubredditEntity subredditId, Pageable pageable);
 }
