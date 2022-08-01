@@ -54,7 +54,8 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().antMatchers("/api/v1/auth/**")
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html");
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
+                .antMatchers("/actuator/prometheus");
     }
 
 }

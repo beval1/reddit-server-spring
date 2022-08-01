@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  app:
+    image: 'docker-spring-boot-postgres:latest'
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - db
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/reddit
+      - DB_USER=compose-postgres
+      - DB_PASSWORD=meuhas12emili
+      - JWT_SECRET_KEY=6jCTFSacGgVfffoK/c/DQg4z0848R9a71acEiKgjozs=
+      - CLOUDINARY_API_SECRET=cH0lNK5SKqUzKH8kI5d8lWU7_Q0
+    ports:
+      - "8084:8084"
+    profiles:
+      - "full"
+  db:
+    image: postgres:14.4-alpine3.16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=compose-postgres
+      - POSTGRES_PASSWORD=meuhas12emili
+      - POSTGRES_DB=reddit
+    profiles:
+      - "local"
+      - "full"
+
+  promtool:
+    image: prom/prometheus:v2.37.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - type: bind
+        source: ./prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+    profiles:
+      - "local"
+      - "full"
+
+  grafana:
+    image: grafana/grafana:9.0.5
+    depends_on:
+      - promtool
+    ports:
+      - "8085:3000"
+    profiles:
+      - "local"
+      - "full"

@@ -18,13 +18,13 @@ import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.PostService;
 import com.beval.server.utils.SecurityExpressionUtility;
 import com.beval.server.utils.VotingUtility;
-import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 

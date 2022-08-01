@@ -11,9 +11,9 @@ import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.utils.SecurityExpressionUtility;
 import com.beval.server.utils.VotingUtility;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 import static com.beval.server.config.AppConstants.*;

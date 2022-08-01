@@ -1,6 +1,8 @@
 package com.beval.server.config;
 
 import com.cloudinary.Cloudinary;
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +47,11 @@ public class BeanConfiguration {
                         "api_secret", cloudinaryConfig.getApiSecret()
                 )
         );
+    }
+
+    @Bean
+    public TimedAspect timedAspect(MeterRegistry registry) {
+        return new TimedAspect(registry);
     }
 
 }

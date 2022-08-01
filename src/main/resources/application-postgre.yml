@@ -21,14 +21,14 @@ spring:
     datasource:
         driverClassName: org.postgresql.Driver
         password: ${DB_PASSWORD}
-        url: jdbc:postgresql://localhost:5432/reddit?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true
-        username: postgres
+        url: ${DB_URL} #jdbc:postgresql://localhost:5432/reddit
+        username: ${DB_USER} #compose-postgres
     jpa:
         hibernate:
             ddl-auto: create-drop
         properties:
             hibernate:
-                dialect: org.hibernate.dialect.PostgreSQL95Dialect
+                dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
                 show_sql: false
         open-in-view: false
@@ -42,4 +42,8 @@ springdoc:
     swagger-ui:
         operationsSorter: method
         tagsSorter: alpha
-
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health, info, prometheus

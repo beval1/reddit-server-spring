@@ -12,6 +12,7 @@ import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.FeedService;
 import com.beval.server.utils.VotingUtility;
+import io.micrometer.core.annotation.Timed;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,7 @@ public class FeedServiceImpl implements FeedService {
 
     @SneakyThrows
     @Transactional
+    @Timed(value = "get-feed.time", description = "Time taken to return feed for the user")
     @Override
     public List<PostDTO> getFeed(UserPrincipal userPrincipal, Pageable pageable) {
         Set<SubredditEntity> subreddits = null;
