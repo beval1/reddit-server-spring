@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -33,16 +36,22 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 
-        http.cors().disable().csrf().disable()
+        http.cors().configurationSource(request -> {
+                    var cors = new CorsConfiguration();
+                    cors.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:80"));
+                    cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    cors.setAllowedHeaders(List.of("*"));
+                    return cors;
+                }).and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/v1/subreddits").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/v1/comments/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/v1/users/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/v1/get-feed").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/subreddits").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/comments/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/get-feed").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -57,5 +66,4 @@ public class SecurityConfiguration {
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
                 .antMatchers("/actuator/prometheus");
     }
-
 }
