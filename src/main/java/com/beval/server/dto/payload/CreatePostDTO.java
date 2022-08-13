@@ -12,4 +12,6 @@ public class CreatePostDTO {
     private String title;
     @JsonProperty(value = "comment")
     private CreateCommentDTO originalComment;
+    private ImageUploadPayloadDTO image;
+    private String link;
 }

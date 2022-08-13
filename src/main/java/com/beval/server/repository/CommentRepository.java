@@ -15,7 +15,8 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
                                                Pageable pageable);
     boolean existsByParentComment(CommentEntity commentEntity);
     int countAllByPostAndParentComment(PostEntity post, CommentEntity commentEntity);
+    int countAllByPost(PostEntity postEntity);
     void deleteAllByPostId(Long postId);
-
     List<CommentEntity> findAllByPost(PostEntity postEntity);
+    CommentEntity findFirstByPostOrderByCreatedOnDesc(PostEntity postEntity);
 }

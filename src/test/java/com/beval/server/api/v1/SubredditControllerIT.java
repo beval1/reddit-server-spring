@@ -133,7 +133,7 @@ class SubredditControllerIT {
     void createSubreddit() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
-                .title("AwesomeNewSubreddit")
+                .name("AwesomeNewSubreddit")
                 .description("example description of my newly created super awesome subreddit")
                 .build();
 
@@ -148,7 +148,7 @@ class SubredditControllerIT {
     void createSubreddit_WhenUserIsAnonymous_IsUnauthorized() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
-                .title("awesome new subreddit")
+                .name("awesome new subreddit")
                 .description("example description of my newly created super awesome subreddit")
                 .build();
 
@@ -164,7 +164,7 @@ class SubredditControllerIT {
     void updateSubreddit_WhenUserIsSubredditModerator_WorksCorrectly() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
-                .title("NewSubredditName")
+                .name("NewSubredditName")
                 .description("updated description of the old subreddit")
                 .build();
 
@@ -179,7 +179,7 @@ class SubredditControllerIT {
     void updateSubreddit_WhenUserIsAppAdmin_WorksCorrectly() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
-                .title("NewSubredditName")
+                .name("NewSubredditName")
                 .description("updated description of the old subreddit")
                 .build();
 
@@ -194,7 +194,7 @@ class SubredditControllerIT {
     void updateSubreddit_WhenUserIsNotSubredditModerator_IsForbidden() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
-                .title("new subreddit name")
+                .name("new subreddit name")
                 .description("updated description of the old subreddit")
                 .build();
 
@@ -209,7 +209,7 @@ class SubredditControllerIT {
     void updateSubreddit_WhenUserIsAnonymous_IsUnauthorized() throws Exception {
         SubredditDTO subredditDTO = SubredditDTO
                 .builder()
-                .title("new subreddit name")
+                .name("new subreddit name")
                 .description("updated description of the old subreddit")
                 .build();
 

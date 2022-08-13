@@ -52,13 +52,51 @@ public class PostController {
                 );
     }
 
-    @PostMapping(value = "/posts/{subredditId}")
-    public ResponseEntity<ResponseDTO> createPost(
+    @PostMapping(value = "/posts/text-post/{subredditId}")
+    public ResponseEntity<ResponseDTO> createTextPost(
             @RequestBody CreatePostDTO createPostDTO,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(value = "subredditId") Long subredditId) {
 
-        postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId);
+        postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId, "text");
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Successfully created post")
+                                .build()
+
+                );
+    }
+
+    @PostMapping(value = "/posts/image-post/{subredditId}")
+    public ResponseEntity<ResponseDTO> createImagePost(
+            @RequestBody CreatePostDTO createPostDTO,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable(value = "subredditId") Long subredditId) {
+
+        postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId, "image");
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .message("Successfully created post")
+                                .build()
+
+                );
+    }
+
+    @PostMapping(value = "/posts/link-post/{subredditId}")
+    public ResponseEntity<ResponseDTO> createLinkPost(
+            @RequestBody CreatePostDTO createPostDTO,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable(value = "subredditId") Long subredditId) {
+
+        postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId, "link");
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

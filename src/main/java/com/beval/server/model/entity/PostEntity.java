@@ -31,4 +31,6 @@ public class PostEntity extends UpvotableEntity {
     @ManyToOne
     private SubredditEntity subreddit;
 
+    @NotNull
+    private String type;
 }

@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class SubredditDTO {
     private Long id;
-    private String title;
+    private String name;
     private String description;
 }

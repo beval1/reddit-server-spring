@@ -1,11 +1,7 @@
 package com.beval.server.api.v1;
 
-import com.beval.server.ResetDatabase;
-import com.beval.server.ResetDatabaseTestExecutionListener;
 import com.beval.server.dto.payload.CreateCommentDTO;
 import com.beval.server.dto.payload.CreatePostDTO;
-import com.beval.server.dto.response.PostDTO;
-import com.beval.server.dto.response.SubredditDTO;
 import com.beval.server.model.entity.PostEntity;
 import com.beval.server.model.entity.RoleEntity;
 import com.beval.server.model.entity.SubredditEntity;
@@ -13,9 +9,7 @@ import com.beval.server.model.entity.UserEntity;
 import com.beval.server.model.enums.RoleEnum;
 import com.beval.server.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +20,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Set;
 
 import static com.beval.server.config.AppConstants.API_BASE;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 

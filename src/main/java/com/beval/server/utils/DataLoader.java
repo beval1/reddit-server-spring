@@ -98,6 +98,7 @@ public class DataLoader implements ApplicationRunner {
                     .title("Testov post1111")
                     .author(user)
                     .subreddit(subreddit)
+                    .type("text")
                     .build()
         );
 
@@ -107,9 +108,34 @@ public class DataLoader implements ApplicationRunner {
                         .title("vtori testov post")
                         .author(user)
                         .subreddit(subreddit)
+                        .type("image")
+                        .upvotedUsers(Set.of(user))
                         .build()
         );
         post2.setCreatedOn(LocalDateTime.of(2020, 1, 1, 1, 1));
+
+        PostEntity post3 = postRepository.save(
+                PostEntity
+                        .builder()
+                        .title("Link post newwwwwwwwwwwwww")
+                        .author(user)
+                        .subreddit(subreddit)
+                        .type("link")
+                        .build()
+        );
+        post3.setCreatedOn(LocalDateTime.of(2022, 6, 1, 1, 1));
+
+
+        PostEntity post4 = postRepository.save(
+                PostEntity
+                        .builder()
+                        .title("Image post newwwwwwwwwwwwww")
+                        .author(user)
+                        .subreddit(subreddit)
+                        .type("image")
+                        .build()
+        );
+
 
         CommentEntity commentEntity = commentRepository.save(
                 CommentEntity
@@ -123,8 +149,8 @@ public class DataLoader implements ApplicationRunner {
         CommentEntity comment2 = commentRepository.save(
                 CommentEntity
                         .builder()
-                        .post(post)
-                        .content("bababababababa")
+                        .post(post2)
+                        .content("https://preview.redd.it/o9hc71py7gh91.jpg?width=640&crop=smart&auto=webp&s=6b47a90dfb2031707bf34dc67e0975eb06ab2158")
                         .author(user)
                         .parentComment(null)
                         .build()
@@ -132,12 +158,23 @@ public class DataLoader implements ApplicationRunner {
         CommentEntity comment3 = commentRepository.save(
                 CommentEntity
                         .builder()
-                        .post(post)
-                        .content("hahahahaahahahaha")
+                        .post(post3)
+                        .content("https://www.w3schools.com/w3css/img_lights.jpg")
                         .author(user)
                         .parentComment(null)
                         .build()
         );
+
+        CommentEntity comment4 = commentRepository.save(
+                CommentEntity
+                        .builder()
+                        .post(post4)
+                        .content("https://i.redd.it/c3r6krnwdch91.png")
+                        .author(user)
+                        .parentComment(null)
+                        .build()
+        );
+
         CommentEntity reply1 = commentRepository.save(
                 CommentEntity
                         .builder()
@@ -148,7 +185,7 @@ public class DataLoader implements ApplicationRunner {
                         .build()
         );
 
-        commentRepository.save(
+        CommentEntity replyToReply = commentRepository.save(
                 CommentEntity
                         .builder()
                         .post(post)

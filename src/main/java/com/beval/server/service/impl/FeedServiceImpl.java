@@ -1,11 +1,14 @@
 package com.beval.server.service.impl;
 
 import com.beval.server.dto.response.AbstractUpvotableDTO;
+import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
+import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
 import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
+import com.beval.server.repository.CommentRepository;
 import com.beval.server.repository.PostRepository;
 import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
@@ -28,14 +31,17 @@ public class FeedServiceImpl implements FeedService {
     private final UserRepository userRepository;
     private final SubredditRepository subredditRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
     private final VotingUtility votingUtility;
 
     public FeedServiceImpl(UserRepository userRepository, SubredditRepository subredditRepository,
-                           PostRepository postRepository, ModelMapper modelMapper, VotingUtility votingUtility) {
+                           PostRepository postRepository, CommentRepository commentRepository,
+                           ModelMapper modelMapper, VotingUtility votingUtility) {
         this.userRepository = userRepository;
         this.subredditRepository = subredditRepository;
         this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
         this.modelMapper = modelMapper;
         this.votingUtility = votingUtility;
     }
@@ -72,8 +78,15 @@ public class FeedServiceImpl implements FeedService {
         //map page to PostDTO
         List<PostDTO> postDTOS = Arrays.asList(modelMapper.map(totalFetchedPosts, PostDTO[].class));
         for (int i = 0; i < postDTOS.size(); i++) {
-            votingUtility.setUpvotedAndDownvotedForUser(totalFetchedPosts.get(i), postDTOS.get(i), userEntity);
-            votingUtility.setVotes(totalFetchedPosts.get(i), postDTOS.get(i));
+            PostEntity postEntity = totalFetchedPosts.get(i);
+            PostDTO postDTO = postDTOS.get(i);
+            votingUtility.setUpvotedAndDownvotedForUser(postEntity, postDTO, userEntity);
+            votingUtility.setVotes(postEntity, postDTO);
+            CommentEntity commentEntity = commentRepository.findFirstByPostOrderByCreatedOnDesc(postEntity);
+            CommentDTO commentDTO = modelMapper.map(commentEntity, CommentDTO.class);
+            postDTO.setAuthor(commentDTO.getAuthor());
+            postDTO.setContent(commentDTO.getContent());
+            postDTO.setCommentsCount(commentRepository.countAllByPost(postEntity));
         }
         //finally sort all DTOs by... upvotes?
         postDTOS = postDTOS.stream()

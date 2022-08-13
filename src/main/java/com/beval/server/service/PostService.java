@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
     PageableDTO<PostDTO> getAllPostsForSubreddit(Long subredditId, UserPrincipal userPrincipal, Pageable pageable);
 
-    void createPostForSubreddit(CreatePostDTO createPostDTO, UserPrincipal principal, Long subredditId);
+    void createPostForSubreddit(CreatePostDTO createPostDTO, UserPrincipal principal, Long subredditId, String postType);
     void deletePost(Long postId);
 
     void upvotePost(Long postId, UserPrincipal userPrincipal);

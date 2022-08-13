@@ -22,6 +22,7 @@ public final class AppConstants {
     public static final long POST_MONTHS_TO_ARCHIVE = 6;
     public static final String DEFAULT_USER_PROFILE_IMAGE_CLOUDINARY_FOLDER = PROJECT_NAME + "/users/profile-images";
     public static final String DEFAULT_USER_BANNER_IMAGE_CLOUDINARY_FOLDER = PROJECT_NAME + "/users/banner-images";
+    public static final String DEFAULT_POST_IMAGES_CLOUDINARY_FOLDER = PROJECT_NAME + "/posts/images";
     public static final int PAGEABLE_DEFAULT_PAGE_NUMBER = 0;
     public  static final int PAGEABLE_DEFAULT_PAGE_SIZE = 20;
 

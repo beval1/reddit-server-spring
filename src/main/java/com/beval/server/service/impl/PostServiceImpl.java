@@ -6,15 +6,13 @@ import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
 import com.beval.server.exception.ResourceNotFoundException;
 import com.beval.server.exception.UserBannedException;
-import com.beval.server.model.entity.CommentEntity;
-import com.beval.server.model.entity.PostEntity;
-import com.beval.server.model.entity.SubredditEntity;
-import com.beval.server.model.entity.UserEntity;
+import com.beval.server.model.entity.*;
 import com.beval.server.repository.CommentRepository;
 import com.beval.server.repository.PostRepository;
 import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
+import com.beval.server.service.CloudinaryService;
 import com.beval.server.service.PostService;
 import com.beval.server.utils.SecurityExpressionUtility;
 import com.beval.server.utils.VotingUtility;
@@ -28,6 +26,8 @@ import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.beval.server.config.AppConstants.DEFAULT_POST_IMAGES_CLOUDINARY_FOLDER;
+
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -38,11 +38,12 @@ public class PostServiceImpl implements PostService {
     private final ModelMapper modelMapper;
     private final VotingUtility votingUtility;
     private final SecurityExpressionUtility securityExpressionUtility;
+    private final CloudinaryService cloudinaryService;
 
     public PostServiceImpl(PostRepository postRepository, SubredditRepository subredditRepository,
                            CommentRepository commentRepository, UserRepository userRepository,
                            ModelMapper modelMapper, VotingUtility votingUtility,
-                           SecurityExpressionUtility securityExpressionUtility) {
+                           SecurityExpressionUtility securityExpressionUtility, CloudinaryService cloudinaryService) {
         this.postRepository = postRepository;
         this.subredditRepository = subredditRepository;
         this.commentRepository = commentRepository;
@@ -50,6 +51,7 @@ public class PostServiceImpl implements PostService {
         this.modelMapper = modelMapper;
         this.votingUtility = votingUtility;
         this.securityExpressionUtility = securityExpressionUtility;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @Override
@@ -86,15 +88,40 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void createPostForSubreddit(@NotNull CreatePostDTO createPostDTO, @NotNull UserPrincipal userPrincipal, Long subredditId) {
+    public void createPostForSubreddit(@NotNull CreatePostDTO createPostDTO, @NotNull UserPrincipal userPrincipal,
+                                       Long subredditId, String postType) {
         SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
                 .orElseThrow(ResourceNotFoundException::new);
 
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                 userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
 
-        if(securityExpressionUtility.isUserBannedFromSubreddit(subredditEntity.getId(), userPrincipal)){
+        if (securityExpressionUtility.isUserBannedFromSubreddit(subredditEntity.getId(), userPrincipal)) {
             throw new UserBannedException();
+        }
+
+        String commentContent;
+        switch (postType) {
+            case "image" -> {
+                //upload the image
+                ImageEntity imageEntity = cloudinaryService.upload(createPostDTO.getImage(), DEFAULT_POST_IMAGES_CLOUDINARY_FOLDER);
+                //set commentContent to image link
+                commentContent = imageEntity.getUrl();
+            }
+            case "text" -> {
+                commentContent = createPostDTO.getOriginalComment().getContent();
+            }
+            case "link" -> {
+                commentContent = createPostDTO.getLink();
+            }
+            default -> {
+                commentContent = null;
+            }
+        }
+
+        if (commentContent == null) {
+            //comment content is not possible to be null
+            throw new IllegalArgumentException();
         }
 
         //create the post
@@ -104,6 +131,7 @@ public class PostServiceImpl implements PostService {
                         .title(createPostDTO.getTitle())
                         .subreddit(subredditEntity)
                         .author(userEntity)
+                        .type(postType)
                         .build()
         );
 
@@ -112,7 +140,7 @@ public class PostServiceImpl implements PostService {
                 CommentEntity
                         .builder()
                         .post(postEntity)
-                        .content(createPostDTO.getOriginalComment().getContent())
+                        .content(commentContent)
                         .author(userEntity)
                         .parentComment(null)
                         .build()
