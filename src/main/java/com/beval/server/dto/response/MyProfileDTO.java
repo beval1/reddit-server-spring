@@ -4,6 +4,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -18,4 +20,5 @@ public class MyProfileDTO {
     private LocalDateTime createdOn;
     private ImageDTO profileImage;
     private ImageDTO bannerImage;
+    private Set<SubredditDTO> subreddits;
 }

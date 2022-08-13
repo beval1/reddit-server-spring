@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional //cuz of lazy subreddits relation
     public MyProfileDTO getMyProfile(UserPrincipal userPrincipal) {
         if (userPrincipal == null){
             throw new NotAuthorizedException();

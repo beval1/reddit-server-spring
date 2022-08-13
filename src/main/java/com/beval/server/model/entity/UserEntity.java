@@ -53,20 +53,6 @@ public class UserEntity extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles;
 
-//    @ManyToMany
-//    @JoinTable(name="user_post_upvotes",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "post_id"))
-//    @Builder.Default
-//    private Set<PostEntity> upvotedPosts = new HashSet<>();
-//
-//    @ManyToMany
-//    @JoinTable(name="user_post_downvotes",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "post_id"))
-//    @Builder.Default
-//    private Set<PostEntity> downvotedPosts = new HashSet<>();
-
     @ManyToMany(mappedBy = "members")
     @Builder.Default
     private Set<SubredditEntity> subreddits = new HashSet<>();
