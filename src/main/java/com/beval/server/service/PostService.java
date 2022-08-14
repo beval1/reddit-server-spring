@@ -17,4 +17,6 @@ public interface PostService {
     void downvotePost(Long postId, UserPrincipal userPrincipal);
 
     void unvotePost(Long postId, UserPrincipal userPrincipal);
+
+    PostDTO getSpecificPost(Long postId, UserPrincipal userPrincipal);
 }

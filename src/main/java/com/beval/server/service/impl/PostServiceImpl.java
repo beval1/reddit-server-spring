@@ -1,6 +1,7 @@
 package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.CreatePostDTO;
+import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
@@ -14,6 +15,7 @@ import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.CloudinaryService;
 import com.beval.server.service.PostService;
+import com.beval.server.utils.EntityMappingUtility;
 import com.beval.server.utils.SecurityExpressionUtility;
 import com.beval.server.utils.VotingUtility;
 import org.modelmapper.ModelMapper;
@@ -39,11 +41,13 @@ public class PostServiceImpl implements PostService {
     private final VotingUtility votingUtility;
     private final SecurityExpressionUtility securityExpressionUtility;
     private final CloudinaryService cloudinaryService;
+    private final EntityMappingUtility entityMappingUtility;
 
     public PostServiceImpl(PostRepository postRepository, SubredditRepository subredditRepository,
                            CommentRepository commentRepository, UserRepository userRepository,
                            ModelMapper modelMapper, VotingUtility votingUtility,
-                           SecurityExpressionUtility securityExpressionUtility, CloudinaryService cloudinaryService) {
+                           SecurityExpressionUtility securityExpressionUtility, CloudinaryService cloudinaryService,
+                           EntityMappingUtility entityMappingUtility) {
         this.postRepository = postRepository;
         this.subredditRepository = subredditRepository;
         this.commentRepository = commentRepository;
@@ -52,6 +56,7 @@ public class PostServiceImpl implements PostService {
         this.votingUtility = votingUtility;
         this.securityExpressionUtility = securityExpressionUtility;
         this.cloudinaryService = cloudinaryService;
+        this.entityMappingUtility = entityMappingUtility;
     }
 
     @Override
@@ -173,6 +178,19 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void unvotePost(Long postId, UserPrincipal userPrincipal) {
         votingUtility.vote(postId, userPrincipal, "unvote");
+    }
+
+    @Override
+    public PostDTO getSpecificPost(Long postId, UserPrincipal userPrincipal) {
+        //user isn't required to be logged in
+        UserEntity userEntity = null;
+        if (userPrincipal != null) {
+            userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
+                    userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
+        }
+        //TODO: abstract, don't duplicate code
+        PostEntity postEntity = postRepository.findById(postId).orElseThrow(ResourceNotFoundException::new);
+        return entityMappingUtility.mapPost(postEntity, userEntity);
     }
 
 }

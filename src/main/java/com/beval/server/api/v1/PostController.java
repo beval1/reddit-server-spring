@@ -54,6 +54,27 @@ public class PostController {
                 );
     }
 
+    @GetMapping(value = "/posts/{postId}")
+    public ResponseEntity<ResponseDTO> getSpecificPost(
+            @PathVariable(value = "postId") Long postId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        PostDTO post = postService.getSpecificPost(postId, userPrincipal);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .content(post)
+                                .message(String
+                                        .format("Successfully retrieved post with id: %s",
+                                                postId))
+                                .build()
+
+                );
+    }
+
     @PostMapping(value = "/posts/text-post/{subredditId}")
     public ResponseEntity<ResponseDTO> createTextPost(
             @RequestBody CreatePostDTO createPostDTO,
