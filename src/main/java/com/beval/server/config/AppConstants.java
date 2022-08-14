@@ -11,7 +11,7 @@ public final class AppConstants {
             AppConstants.API_BASE + "/auth/signup"
     );
     public static final int MAXIMUM_COMMENT_LENGTH = 255;
-    public static final int MINIMUM_TITLE_LENGTH = 10;
+    public static final int MINIMUM_TITLE_LENGTH = 6;
     public static final int MAXIMUM_TITLE_LENGTH = 80;
     public static final int MAXIMUM_USERNAME_LENGTH = 20;
     public static final int MINIMUM_USERNAME_LENGTH = 5;

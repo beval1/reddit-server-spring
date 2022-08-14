@@ -1,6 +1,7 @@
 package com.beval.server.api.v1;
 
 import com.beval.server.dto.payload.CreatePostDTO;
+import com.beval.server.dto.payload.ImageUploadPayloadDTO;
 import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.dto.response.ResponseDTO;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.beval.server.config.AppConstants.*;
 
@@ -73,10 +75,15 @@ public class PostController {
 
     @PostMapping(value = "/posts/image-post/{subredditId}")
     public ResponseEntity<ResponseDTO> createImagePost(
-            @RequestBody CreatePostDTO createPostDTO,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable(value = "subredditId") Long subredditId) {
+            @PathVariable(value = "subredditId") Long subredditId,
+            @RequestParam String postTitle,
+            @RequestPart MultipartFile file) {
 
+        CreatePostDTO createPostDTO = CreatePostDTO.builder()
+                .image(ImageUploadPayloadDTO.builder().multipartFile(file).build())
+                .title(postTitle)
+                .build();
         postService.createPostForSubreddit(createPostDTO, userPrincipal, subredditId, "image");
 
         return ResponseEntity
