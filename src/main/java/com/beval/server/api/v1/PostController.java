@@ -54,7 +54,7 @@ public class PostController {
                 );
     }
 
-    @GetMapping(value = "/posts/{postId}")
+    @GetMapping(value = "/posts/post/{postId}")
     public ResponseEntity<ResponseDTO> getSpecificPost(
             @PathVariable(value = "postId") Long postId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {

@@ -1,7 +1,6 @@
 package com.beval.server.service.impl;
 
 import com.beval.server.dto.payload.CreatePostDTO;
-import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.dto.response.PageableDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
@@ -181,6 +180,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public PostDTO getSpecificPost(Long postId, UserPrincipal userPrincipal) {
         //user isn't required to be logged in
         UserEntity userEntity = null;

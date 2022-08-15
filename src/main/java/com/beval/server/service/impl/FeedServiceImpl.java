@@ -1,10 +1,8 @@
 package com.beval.server.service.impl;
 
 import com.beval.server.dto.response.AbstractUpvotableDTO;
-import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.dto.response.PostDTO;
 import com.beval.server.exception.NotAuthorizedException;
-import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
 import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
@@ -24,7 +22,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class FeedServiceImpl implements FeedService {
