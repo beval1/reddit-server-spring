@@ -137,43 +137,43 @@ class AuthControllerIT {
     }
 
     @Test
-    void signIn_WhenBadCredentials_IsUnauthorized() throws Exception {
+    void signIn_WhenBadCredentials_IsBadRequest() throws Exception {
         mockMvc.perform(post(API_BASE + "/auth/signin")
                         .content(objectMapper.writeValueAsString(new SigninDTO("test1", "123456789")))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void signIn_WhenAccountLocked_IsUnauthorized() throws Exception {
+    void signIn_WhenAccountLocked_IsBadRequest() throws Exception {
         mockMvc.perform(post(API_BASE + "/auth/signin")
                         .content(objectMapper.writeValueAsString(new SigninDTO("locked_user", "1234")))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void signIn_WhenAccountDisabled_IsUnauthorized() throws Exception {
+    void signIn_WhenAccountDisabled_IsBadRequest() throws Exception {
         mockMvc.perform(post(API_BASE + "/auth/signin")
                         .content(objectMapper.writeValueAsString(new SigninDTO("disabled_user", "1234")))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void signIn_WhenAccountCredentialsExpired_IsUnauthorized() throws Exception {
+    void signIn_WhenAccountCredentialsExpired_IsBadRequest() throws Exception {
         mockMvc.perform(post(API_BASE + "/auth/signin")
                         .content(objectMapper.writeValueAsString(new SigninDTO("credentials_expired", "1234")))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void signIn_WhenAccountExpired_IsUnauthorized() throws Exception {
+    void signIn_WhenAccountExpired_IsBadRequest() throws Exception {
         mockMvc.perform(post(API_BASE + "/auth/signin")
                         .content(objectMapper.writeValueAsString(new SigninDTO("acc_expired", "1234")))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

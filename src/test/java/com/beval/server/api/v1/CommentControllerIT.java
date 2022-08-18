@@ -153,6 +153,7 @@ class CommentControllerIT {
                         .title("First test post")
                         .author(testUser)
                         .subreddit(subreddit)
+                        .type("text")
                         .build()
         );
 
@@ -210,6 +211,7 @@ class CommentControllerIT {
                         .title("Second test post")
                         .author(testUser)
                         .subreddit(subreddit)
+                        .type("text")
                         .build()
         );
 
@@ -229,6 +231,7 @@ class CommentControllerIT {
                         .title("Archived test post")
                         .author(testUser)
                         .subreddit(subreddit)
+                        .type("text")
                         .build()
         );
 

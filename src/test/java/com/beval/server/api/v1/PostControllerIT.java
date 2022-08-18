@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest()
+@SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 class PostControllerIT {
@@ -136,6 +136,7 @@ class PostControllerIT {
                         .author(testUser)
                         .subreddit(subreddit)
                         .title("New post title")
+                        .type("text")
                         .build()
         );
 
@@ -155,6 +156,7 @@ class PostControllerIT {
                         .author(testUser)
                         .subreddit(new_sub)
                         .title("New post title")
+                        .type("text")
                         .build()
         );
 
@@ -164,6 +166,7 @@ class PostControllerIT {
                         .author(testUser)
                         .subreddit(new_sub)
                         .title("New post title")
+                        .type("text")
                         .archived(true)
                         .build()
         );
@@ -199,7 +202,7 @@ class PostControllerIT {
 
     @Test
     @WithUserDetails(value = "test_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void createPost_WhenLoggedIn_WorksCorrectly() throws Exception {
+    void createTextPost_WhenLoggedIn_WorksCorrectly() throws Exception {
         CreatePostDTO createPostDTO = CreatePostDTO
                 .builder()
                 .title("My new post title")
@@ -209,7 +212,7 @@ class PostControllerIT {
                         .build())
                 .build();
 
-        mockMvc.perform(post(API_BASE + "/posts/" + subreddit.getId())
+        mockMvc.perform(post(API_BASE + "/posts/text-post/" + subreddit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createPostDTO)))
                 .andExpect(status().isCreated());
@@ -217,7 +220,7 @@ class PostControllerIT {
 
     @Test
     @WithUserDetails(value = "banned_user", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void createPost_WhenUserIsBanned_IsForbidden() throws Exception {
+    void createTextPost_WhenUserIsBanned_IsForbidden() throws Exception {
         CreatePostDTO createPostDTO = CreatePostDTO
                 .builder()
                 .title("My new post title")
@@ -227,7 +230,7 @@ class PostControllerIT {
                         .build())
                 .build();
 
-        mockMvc.perform(post(API_BASE + "/posts/" + new_sub.getId())
+        mockMvc.perform(post(API_BASE + "/posts/text-post/" + new_sub.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createPostDTO)))
                 .andExpect(status().isForbidden());
@@ -235,7 +238,7 @@ class PostControllerIT {
 
     @Test
     @WithAnonymousUser
-    void createPost_WhenAnonymous_IsUnauthorized() throws Exception {
+    void createTextPost_WhenAnonymous_IsUnauthorized() throws Exception {
         CreatePostDTO createPostDTO = CreatePostDTO
                 .builder()
                 .title("My new post title")
@@ -245,7 +248,7 @@ class PostControllerIT {
                         .build())
                 .build();
 
-        mockMvc.perform(post(API_BASE + "/posts/" + subreddit.getId())
+        mockMvc.perform(post(API_BASE + "/posts/text-post/" + subreddit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createPostDTO)))
                 .andExpect(status().isUnauthorized());
