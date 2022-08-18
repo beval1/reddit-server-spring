@@ -20,9 +20,9 @@ spring:
 #                default-page-size: 20
     datasource:
         driverClassName: org.postgresql.Driver
-        password: ${DB_PASSWORD}
-        url: ${DB_URL} #jdbc:postgresql://localhost:5432/reddit
-        username: ${DB_USER} #compose-postgres
+#        password: ${DB_PASSWORD}
+#        url: ${DB_URL} #jdbc:postgresql://localhost:5432/reddit
+#        username: ${DB_USER} #compose-postgres
     jpa:
         hibernate:
             ddl-auto: create-drop
