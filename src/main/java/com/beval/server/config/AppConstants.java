@@ -10,6 +10,12 @@ public final class AppConstants {
             AppConstants.API_BASE + "/auth/signin",
             AppConstants.API_BASE + "/auth/signup"
     );
+    public static final List<String> CROSS_ORIGIN_DOMAINS = List.of(
+            "http://localhost:3000",
+            "http://127.0.0.1:80",
+            "http://reddit-clone-react1.herokuapp.com",
+            "https://reddit-clone-react1.herokuapp.com"
+    );
     public static final int MAXIMUM_COMMENT_LENGTH = 255;
     public static final int MINIMUM_TITLE_LENGTH = 6;
     public static final int MAXIMUM_TITLE_LENGTH = 80;

@@ -16,6 +16,8 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
+import static com.beval.server.config.AppConstants.CROSS_ORIGIN_DOMAINS;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -38,7 +40,7 @@ public class SecurityConfiguration {
 
         http.cors().configurationSource(request -> {
                     var cors = new CorsConfiguration();
-                    cors.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:80"));
+                    cors.setAllowedOrigins(CROSS_ORIGIN_DOMAINS);
                     cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     cors.setAllowedHeaders(List.of("*"));
                     return cors;

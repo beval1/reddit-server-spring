@@ -1,6 +1,7 @@
 app:
     jwtExpirationMs: 60000000
     jwtSecret: ${JWT_SECRET_KEY}
+    dataLoader: true
 cloudinary:
     apiKey: 548943318855874
     apiSecret: ${CLOUDINARY_API_SECRET}
@@ -18,16 +19,16 @@ spring:
 #                max-page-size: 100
 #                default-page-size: 20
     datasource:
-        driverClassName: com.mysql.cj.jdbc.Driver
+        driverClassName: org.postgresql.Driver
         password: ${DB_PASSWORD}
-        url: jdbc:mysql://localhost:3306/reddit?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true
-        username: root
+        url: ${DB_URL} #jdbc:postgresql://localhost:5432/reddit
+        username: ${DB_USER} #compose-postgres
     jpa:
         hibernate:
             ddl-auto: create-drop
         properties:
             hibernate:
-                dialect: org.hibernate.dialect.MySQL8Dialect
+                dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
                 show_sql: false
         open-in-view: false
@@ -35,3 +36,14 @@ spring:
         multipart:
             max-file-size: 10MB
             max-request-size: 10MB
+springdoc:
+    packagesToScan: com.beval.server.api.v1
+    pathsToMatch: /api/v1/**
+    swagger-ui:
+        operationsSorter: method
+        tagsSorter: alpha
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health, info, prometheus
