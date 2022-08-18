@@ -45,6 +45,19 @@ public class SubredditController {
                 );
     }
 
+    @GetMapping("/subreddits/subreddit/{subredditId}")
+    public ResponseEntity<ResponseDTO> getSpecificSubreddit(@PathVariable("subredditId") Long subredditId) {
+        SubredditDTO subredditDTO = subredditService.getSpecificSubreddit(subredditId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ResponseDTO
+                                .builder()
+                                .content(subredditDTO)
+                                .build()
+                );
+    }
+
     @PostMapping("/subreddits")
     public ResponseEntity<ResponseDTO> createSubreddit(@RequestBody CreateSubredditDTO createSubredditDTO, @AuthenticationPrincipal UserPrincipal principal) {
         subredditService.createSubreddit(createSubredditDTO, principal);

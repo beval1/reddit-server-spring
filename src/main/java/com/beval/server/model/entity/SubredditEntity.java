@@ -28,6 +28,12 @@ public class SubredditEntity extends BaseEntity {
     @Length(max = MAXIMUM_SUBREDDIT_DESCRIPTION_LENGTH, min = MINIMUM_SUBREDDIT_DESCRIPTION_LENGTH)
     private String description;
 
+    @OneToOne
+    private ImageEntity mainImage;
+
+    @OneToOne
+    private ImageEntity backgroundImage;
+
     @NotNull
     @ManyToMany
     @JoinTable(name = "subbreddits_moderators",

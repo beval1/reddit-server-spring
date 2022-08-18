@@ -2,8 +2,10 @@ package com.beval.server.utils.impl;
 
 import com.beval.server.dto.response.CommentDTO;
 import com.beval.server.dto.response.PostDTO;
+import com.beval.server.dto.response.SubredditDTO;
 import com.beval.server.model.entity.CommentEntity;
 import com.beval.server.model.entity.PostEntity;
+import com.beval.server.model.entity.SubredditEntity;
 import com.beval.server.model.entity.UserEntity;
 import com.beval.server.repository.CommentRepository;
 import com.beval.server.utils.EntityMappingUtility;
@@ -35,5 +37,12 @@ public class EntityMappingUtilityImpl implements EntityMappingUtility {
         postDTO.setContent(commentDTO.getContent());
         postDTO.setCommentsCount(commentRepository.countAllByPost(postEntity));
         return postDTO;
+    }
+
+    @Override
+    public SubredditDTO mapSubreddit(SubredditEntity subredditEntity) {
+        SubredditDTO subredditDTO = modelMapper.map(subredditEntity, SubredditDTO.class);
+        subredditDTO.setMembersCount(subredditEntity.getMembers().size());
+        return subredditDTO;
     }
 }

@@ -12,4 +12,6 @@ public interface SubredditService {
     void updateSubreddit(Long subredditId, CreateSubredditDTO createSubredditDTO, UserPrincipal principal);
 
     void joinSubreddit(UserPrincipal principal, Long subredditId);
+
+    SubredditDTO getSpecificSubreddit(Long subredditId);
 }

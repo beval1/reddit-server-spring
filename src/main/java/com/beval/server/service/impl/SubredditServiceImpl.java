@@ -11,13 +11,14 @@ import com.beval.server.repository.SubredditRepository;
 import com.beval.server.repository.UserRepository;
 import com.beval.server.security.UserPrincipal;
 import com.beval.server.service.SubredditService;
+import com.beval.server.utils.EntityMappingUtility;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,17 +27,21 @@ public class SubredditServiceImpl implements SubredditService {
     private final SubredditRepository subredditRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final EntityMappingUtility entityMappingUtility;
 
-    public SubredditServiceImpl(SubredditRepository subredditRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    public SubredditServiceImpl(SubredditRepository subredditRepository, UserRepository userRepository,
+                                ModelMapper modelMapper, EntityMappingUtility entityMappingUtility) {
         this.subredditRepository = subredditRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.entityMappingUtility = entityMappingUtility;
     }
 
     @Override
     public PageableDTO<SubredditDTO> getAllSubreddits(Pageable pageable) {
         Page<SubredditEntity> subredditEntities = subredditRepository.findAll(pageable);
-        List<SubredditDTO> subredditDTOS = Arrays.asList(modelMapper.map(subredditEntities.getContent(), SubredditDTO[].class));
+        List<SubredditDTO> subredditDTOS = new ArrayList<>();
+        subredditEntities.forEach(s -> subredditDTOS.add(entityMappingUtility.mapSubreddit(s)));
         return PageableDTO
                 .<SubredditDTO>builder()
                 .pageContent(subredditDTOS)
@@ -71,10 +76,10 @@ public class SubredditServiceImpl implements SubredditService {
         SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        if (createSubredditDTO.getDescription() != null){
+        if (createSubredditDTO.getDescription() != null) {
             subredditEntity.setName(createSubredditDTO.getTitle());
         }
-        if (createSubredditDTO.getTitle() != null){
+        if (createSubredditDTO.getTitle() != null) {
             subredditEntity.setDescription(createSubredditDTO.getDescription());
         }
     }
@@ -89,5 +94,13 @@ public class SubredditServiceImpl implements SubredditService {
 
         userEntity.getSubreddits().add(subredditEntity);
         subredditEntity.getMembers().add(userEntity);
+    }
+
+    @Override
+    @Transactional
+    public SubredditDTO getSpecificSubreddit(Long subredditId) {
+        SubredditEntity subredditEntity = subredditRepository.findById(subredditId)
+                .orElseThrow(ResourceNotFoundException::new);
+        return entityMappingUtility.mapSubreddit(subredditEntity);
     }
 }
