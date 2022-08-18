@@ -50,21 +50,27 @@
 <h2>Test coverage</h2>
   <p>The application has a little bit over 70% lines coverage mainly from integration tests.</p>
   
-  <h2>API</h2>
-	![auth_controller](https://user-images.githubusercontent.com/86118441/185499258-3364afd9-2664-4c2b-ae91-a677c402e09c.png)
-  ![comment_controller](https://user-images.githubusercontent.com/86118441/185499315-5123af04-9cd5-4b79-a4a6-a4b13625eae8.png)
-  ![feed-controller](https://user-images.githubusercontent.com/86118441/185499334-62e27b3f-0c20-4499-be4c-39b614e8e04b.png)
-  ![post-controller](https://user-images.githubusercontent.com/86118441/185499359-c0dca71f-3b35-458c-a63f-773563b4aab8.png)
-  ![subreddit_controller](https://user-images.githubusercontent.com/86118441/185499386-b30c741e-535e-4148-a2c1-8608ab97187c.png)
-  ![user_controller](https://user-images.githubusercontent.com/86118441/185499398-d9a60a2d-8d4a-45f2-8390-25c8ad5bc404.png)
-
-
   <h2>How to Run?</h2>
   <p>To run localy, you must set the enviroment variables in application.yaml file.</p>
   <p>You can also run the application with docker compose. There are two profiles - "local" and "full". 
   Profile "local" will start database, prometheus and graphana containers.
   Profile "full" will start all the containers "local" starts but it will also make container of the spring application. 
   Note: You must have packaged and placed the .jar file of the application in the docker directory to start "full" profile </p>
+  
+  <h2>API</h2>
+  
+  ![comment_controller](https://user-images.githubusercontent.com/86118441/185499315-5123af04-9cd5-4b79-a4a6-a4b13625eae8.png)
+  
+  ![feed-controller](https://user-images.githubusercontent.com/86118441/185499334-62e27b3f-0c20-4499-be4c-39b614e8e04b.png)
+  
+  ![post-controller](https://user-images.githubusercontent.com/86118441/185499359-c0dca71f-3b35-458c-a63f-773563b4aab8.png)
+  
+  ![subreddit_controller](https://user-images.githubusercontent.com/86118441/185499386-b30c741e-535e-4148-a2c1-8608ab97187c.png)
+  
+  ![auth_controller](https://user-images.githubusercontent.com/86118441/185499258-3364afd9-2664-4c2b-ae91-a677c402e09c.png)
+  
+![user_controller](https://user-images.githubusercontent.com/86118441/185499398-d9a60a2d-8d4a-45f2-8390-25c8ad5bc404.png)
+
+  
  
 
- </ul>
