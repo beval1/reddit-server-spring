@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 import static com.beval.server.config.AppConstants.*;
 
 @RestController
@@ -70,7 +72,7 @@ public class CommentController {
 
     @PostMapping(value = "/comments/{postId}")
     public ResponseEntity<ResponseDTO> createComment(
-            @RequestBody CreateCommentDTO createCommentDTO,
+            @Valid @RequestBody CreateCommentDTO createCommentDTO,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId) {
         commentService.createComment(postId, createCommentDTO, userPrincipal);
@@ -89,7 +91,7 @@ public class CommentController {
     public ResponseEntity<ResponseDTO> createReply(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody CreateCommentDTO createCommentDTO) {
+            @Valid @RequestBody CreateCommentDTO createCommentDTO) {
         commentService.createReply(commentId, createCommentDTO, userPrincipal);
 
         return ResponseEntity
@@ -107,7 +109,7 @@ public class CommentController {
     public ResponseEntity<ResponseDTO> updateCommentOrReply(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody CreateCommentDTO createCommentDTO) {
+            @Valid @RequestBody CreateCommentDTO createCommentDTO) {
 
         commentService.updateCommentOrReply(commentId, createCommentDTO, userPrincipal);
 

@@ -18,6 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 import static com.beval.server.config.AppConstants.*;
 
 @RestController
@@ -77,7 +79,7 @@ public class PostController {
 
     @PostMapping(value = "/posts/text-post/{subredditId}")
     public ResponseEntity<ResponseDTO> createTextPost(
-            @RequestBody CreatePostDTO createPostDTO,
+            @Valid @RequestBody CreatePostDTO createPostDTO,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(value = "subredditId") Long subredditId) {
 
@@ -120,7 +122,7 @@ public class PostController {
 
     @PostMapping(value = "/posts/link-post/{subredditId}")
     public ResponseEntity<ResponseDTO> createLinkPost(
-            @RequestBody CreatePostDTO createPostDTO,
+            @Valid @RequestBody CreatePostDTO createPostDTO,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(value = "subredditId") Long subredditId) {
 

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 import static com.beval.server.config.AppConstants.API_BASE;
 
 @RestController
@@ -25,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/signin")
-    public ResponseEntity<ResponseDTO> signIn(@RequestBody SigninDTO signinDto) {
+    public ResponseEntity<ResponseDTO> signIn(@Valid @RequestBody SigninDTO signinDto) {
 
         String token = authService.signInUser(signinDto);
 
@@ -44,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<ResponseDTO> signUp(@RequestBody SignupDTO signupDto) {
+    public ResponseEntity<ResponseDTO> signUp(@Valid @RequestBody SignupDTO signupDto) {
         authService.signUpUser(signupDto);
 
         return ResponseEntity

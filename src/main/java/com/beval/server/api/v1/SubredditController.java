@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 import static com.beval.server.config.AppConstants.*;
 
 @RestController
@@ -59,7 +61,7 @@ public class SubredditController {
     }
 
     @PostMapping("/subreddits")
-    public ResponseEntity<ResponseDTO> createSubreddit(@RequestBody CreateSubredditDTO createSubredditDTO, @AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<ResponseDTO> createSubreddit(@Valid @RequestBody CreateSubredditDTO createSubredditDTO, @AuthenticationPrincipal UserPrincipal principal) {
         subredditService.createSubreddit(createSubredditDTO, principal);
 
         return ResponseEntity
@@ -91,7 +93,7 @@ public class SubredditController {
     @PreAuthorize("hasRole('ROLE_ADMIN') OR @securityExpressionUtilityImpl.isSubredditModerator(#subredditId, principal)")
     public ResponseEntity<ResponseDTO> updateSubreddit(
             @PathVariable Long subredditId,
-            @RequestBody CreateSubredditDTO createSubredditDTO,
+            @Valid @RequestBody CreateSubredditDTO createSubredditDTO,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
 
