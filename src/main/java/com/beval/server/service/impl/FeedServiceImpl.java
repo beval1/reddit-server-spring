@@ -60,7 +60,12 @@ public class FeedServiceImpl implements FeedService {
         if (userPrincipal != null){
             userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
                     userPrincipal.getUsername()).orElseThrow(NotAuthorizedException::new);
-            subreddits = userEntity.getSubreddits();
+            Set<SubredditEntity> userSubreddits = userEntity.getSubreddits();
+            if (userSubreddits.size() < 5){
+                subreddits = subredditRepository.findRandomSubreddits(10);
+            } else {
+                subreddits = userSubreddits;
+            }
             //TODO: maybe add some new subreddits here, in which the user hasn't joined?
         } else {
             //randomly pick subreddits... with the most members???
