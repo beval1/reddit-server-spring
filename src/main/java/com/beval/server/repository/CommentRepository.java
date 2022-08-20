@@ -18,5 +18,5 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     int countAllByPost(PostEntity postEntity);
     void deleteAllByPostId(Long postId);
     List<CommentEntity> findAllByPost(PostEntity postEntity);
-    CommentEntity findFirstByPostOrderByCreatedOnDesc(PostEntity postEntity);
+    CommentEntity findFirstByPostOrderByCreatedOnAsc(PostEntity postEntity);
 }

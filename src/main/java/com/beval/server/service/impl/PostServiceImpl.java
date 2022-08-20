@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,10 +72,10 @@ public class PostServiceImpl implements PostService {
         }
 
         Page<PostEntity> postEntities = postRepository.findAllBySubreddit(subredditEntity, pageable);
-        List<PostDTO> postDTOS = Arrays.asList(modelMapper.map(postEntities.getContent(), PostDTO[].class));
-        for (int i = 0; i < postDTOS.size(); i++) {
-            votingUtility.setUpvotedAndDownvotedForUser(postEntities.getContent().get(i), postDTOS.get(i), userEntity);
-            votingUtility.setVotes(postEntities.getContent().get(i), postDTOS.get(i));
+        List<PostDTO> postDTOS = new ArrayList<>();
+        int entitiesCount = postEntities.getSize();
+        for (int i = 0; i < entitiesCount; i++) {
+            entityMappingUtility.mapPost(postEntities.getContent().get(i), userEntity);
         }
 
         return PageableDTO
