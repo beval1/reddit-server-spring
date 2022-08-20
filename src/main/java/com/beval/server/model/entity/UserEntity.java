@@ -44,8 +44,6 @@ public class UserEntity extends BaseEntity {
     @Builder.Default
     private boolean credentialsExpired = false;
 
-
-    // when user is deleted, delete the corresponding roles in the mapping table
     @NotNull
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="users_roles",
