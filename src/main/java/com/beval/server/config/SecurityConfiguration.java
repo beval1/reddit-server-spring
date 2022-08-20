@@ -41,7 +41,7 @@ public class SecurityConfiguration {
         http.cors().configurationSource(request -> {
                     var cors = new CorsConfiguration();
                     cors.setAllowedOrigins(CROSS_ORIGIN_DOMAINS);
-                    cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                     cors.setAllowedHeaders(List.of("*"));
                     return cors;
                 }).and().csrf().disable()
