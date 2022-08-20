@@ -31,7 +31,7 @@ public class EntityMappingUtilityImpl implements EntityMappingUtility {
         PostDTO postDTO = modelMapper.map(postEntity, PostDTO.class);
         votingUtility.setUpvotedAndDownvotedForUser(postEntity, postDTO, userEntity);
         votingUtility.setVotes(postEntity, postDTO);
-        CommentEntity commentEntity = commentRepository.findFirstByPostOrderByCreatedOnDesc(postEntity);
+        CommentEntity commentEntity = commentRepository.findFirstByPostOrderByCreatedOnAsc(postEntity);
         CommentDTO commentDTO = modelMapper.map(commentEntity, CommentDTO.class);
         postDTO.setAuthor(commentDTO.getAuthor());
         postDTO.setContent(commentDTO.getContent());
