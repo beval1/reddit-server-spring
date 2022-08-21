@@ -15,6 +15,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 import static com.beval.server.config.AppConstants.API_BASE;
 
 @RestController
@@ -45,7 +47,7 @@ public class UserController {
     //TODO: add preauthorize
     @PatchMapping(value = "/users/my-profile")
     public ResponseEntity<ResponseDTO> updateMyProfile(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                       @RequestBody UpdateUserProfileDTO updateUserProfileDTO) {
+                                                       @Valid @RequestBody UpdateUserProfileDTO updateUserProfileDTO) {
         userService.updateMyProfile(userPrincipal, updateUserProfileDTO);
 
         return ResponseEntity

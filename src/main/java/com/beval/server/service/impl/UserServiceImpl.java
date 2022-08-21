@@ -116,6 +116,7 @@ public class UserServiceImpl implements UserService {
         cloudinaryService.delete(profileImage);
     }
 
+    @Transactional
     @Override
     public void updateMyProfile(UserPrincipal userPrincipal, UpdateUserProfileDTO updateUserProfileDTO) {
         UserEntity userEntity = userRepository.findByUsernameOrEmail(userPrincipal.getUsername(),
